@@ -24,72 +24,38 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     checkVisibility();
 
-    // Funkcja do pobierania danych o premierach gier z backendu
-    const fetchGameReleases = async () => {
+
+    const newsContainer = document.getElementById('news-container');
+
+    // Function to fetch the latest MMO news
+    const fetchLatestNews = async () => {
         try {
-            // Zmieniamy URL na adres naszego serwera backendowego
-            const response = await fetch('http://localhost:3000/api/game-releases');
+            const response = await fetch('https://www.mmobomb.com/api1/latestnews');
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            displayGameReleases(data);
+            displayNews(data);
         } catch (error) {
-            console.error('Error fetching game releases:', error);
-            const newsContainer = document.getElementById('news-container');
-            newsContainer.innerHTML += `<p>Nie udało się załadować informacji o premierach gier. ${error.message}</p>`;
+            console.error('Error fetching latest news:', error);
+            newsContainer.innerHTML += `<p>Nie udało się załadować informacji o nowościach. ${error.message}</p>`;
         }
     };
 
-    // Funkcja do wyświetlania informacji o premierach gier
-    const displayGameReleases = (data) => {
-        const newsContainer = document.getElementById('news-container');
-        data.forEach(release => {
-            const releaseDate = new Date(release.date * 1000);
-            const releaseDateString = releaseDate.toLocaleDateString('pl-PL');
-            const gameInfo = `
-                <div class="game-release note">
-                    <h3>${release.game.name}</h3>
-                    <p>${releaseDateString}</p>
-                    <div class="countdown" data-date="${releaseDate}">
-                        <div class="time days"><span class="number">0</span><span class="label">DNI</span></div>
-                        <div class="time hours"><span class="number">0</span><span class="label">GODZIN</span></div>
-                        <div class="time minutes"><span class="number">0</span><span class="label">MINUT</span></div>
-                    </div>
+    // Function to display the news
+    const displayNews = (data) => {
+        data.forEach(news => {
+            const newsItem = `
+                <div class="news-item note">
+                    <h3>${news.title}</h3>
+                    <p>${news.description}</p>
+                    <a href="${news.url}" target="_blank">Read more</a>
                 </div>
             `;
-            newsContainer.innerHTML += gameInfo;
-        });
-        initializeCountdowns();
-        checkVisibility();
-    };
-
-    // Funkcja do inicjalizacji liczników czasu
-    const initializeCountdowns = () => {
-        const countdowns = document.querySelectorAll('.countdown');
-        countdowns.forEach(countdown => {
-            const targetDate = new Date(countdown.getAttribute('data-date'));
-            updateCountdown(countdown, targetDate);
-            setInterval(() => updateCountdown(countdown, targetDate), 60000);
+            newsContainer.innerHTML += newsItem;
         });
     };
 
-    // Funkcja do aktualizacji licznika czasu
-    const updateCountdown = (countdown, targetDate) => {
-        const now = new Date();
-        const timeDifference = targetDate - now;
-        if (timeDifference <= 0) {
-            countdown.innerHTML = '<div class="time"><span class="number">0</span><span class="label">WYDANO</span></div>';
-            return;
-        }
-        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-        countdown.querySelector('.days .number').textContent = days;
-        countdown.querySelector('.hours .number').textContent = hours;
-        countdown.querySelector('.minutes .number').textContent = minutes;
-    };
-
-    // Wywołanie funkcji pobierającej dane o premierach gier
-    fetchGameReleases();
+    // Fetch the latest news when the page loads
+    fetchLatestNews();
 });
