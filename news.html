@@ -20,32 +20,15 @@
             </ul>
         </nav>
     </header>
-    <div class="container news">
-        <h2>Nowości ze świata IT</h2>
-        <div id="news-container"></div>
+    <div class="container">
+        <div class="note">
+            <h2>Nowości ze świata gier</h2>
+            <div id="news-container"></div>
+        </div>
     </div>
     <footer>
         <p>&copy; 2025 Moje Portfolio</p>
     </footer>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('https://api.example.com/it-news')
-                .then(response => response.json())
-                .then(data => {
-                    const newsContainer = document.getElementById('news-container');
-                    data.articles.forEach(article => {
-                        const newsItem = document.createElement('div');
-                        newsItem.className = 'news-item';
-                        newsItem.innerHTML = `
-                            <h3>${article.title}</h3>
-                            <p>${article.description}</p>
-                            <a href="${article.url}" target="_blank">Czytaj więcej</a>
-                        `;
-                        newsContainer.appendChild(newsItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching news:', error));
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
