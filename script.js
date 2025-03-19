@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         checkVisibility();
     });
     checkVisibility();
+
     // Fetch upcoming game releases from IGDB
     const clientId = 'okxajnuv4m071nlh5n5hbhd8j00737';
     const accessToken = 'okxajnuv4m071nlh5n5hbhd8j00737';
@@ -44,16 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            fields: 'game.name, date, platform.name',
-            filter: {
-                date: {
-                    gt: Math.floor(Date.now() / 1000)
-                }
-            },
-            sort: 'date asc',
-            limit: 10
-        })
+        body: `fields game.name, date, platform.name; where date > ${Math.floor(Date.now() / 1000)}; sort date asc; limit 10;`
     })
     .then(response => response.json())
     .then(data => {
