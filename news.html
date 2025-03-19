@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nowości</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Moje Portfolio</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Strona Główna</a></li>
+                <li><a href="about.html">O mnie</a></li>
+                <li><a href="projects.html">Projekty</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="news.html">Nowości</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container news">
+        <h2>Nowości ze świata IT</h2>
+        <div id="news-container"></div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Moje Portfolio</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('https://api.example.com/it-news')
+                .then(response => response.json())
+                .then(data => {
+                    const newsContainer = document.getElementById('news-container');
+                    data.articles.forEach(article => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'news-item';
+                        newsItem.innerHTML = `
+                            <h3>${article.title}</h3>
+                            <p>${article.description}</p>
+                            <a href="${article.url}" target="_blank">Czytaj więcej</a>
+                        `;
+                        newsContainer.appendChild(newsItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching news:', error));
+        });
+    </script>
+</body>
+</html>
