@@ -13,10 +13,11 @@ app.get('/api/game-releases', async (req, res) => {
     const clientId = 'mv9526izokxlgxqh83gusppt7yfn6z';
     const accessToken = 'okxajnuv4m071nlh5n5hbhd8j00737'; // Ensure this is the correct Access Token
     const apiUrl = 'https://api.igdb.com/v4/release_dates';
-    
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS proxy
+
     try {
         // Use a CORS proxy to fetch the data
-        const response = await fetch(`https://cors-anywhere.herokuapp.com/${apiUrl}`, {
+        const response = await fetch(`${proxyUrl}${apiUrl}`, {
             method: 'POST',
             headers: {
                 'Client-ID': clientId,
