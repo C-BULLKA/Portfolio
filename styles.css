@@ -141,6 +141,31 @@ nav ul li a:hover {
     margin-bottom: 20px;
 }
 
+.news-item {
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.news-item h3 {
+    margin-top: 0;
+}
+
+.news-item p {
+    margin: 8px 0;
+}
+
+.news-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.news-item a:hover {
+    text-decoration: underline;
+}
+
 /* Blog Section */
 .blog {
     background: #fff;
