@@ -1,201 +1,394 @@
+/* Podstawowe style */
 body {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #f5f5dc;
-    background-image: linear-gradient(to bottom, transparent 95%, rgba(0, 0, 0, 0.1) 95%);
-    background-size: 100% 30px;
-    background-attachment: fixed; /* Tło pozostaje nieruchome */
+    font-family: 'Patrick Hand', 'Courier New', Courier, monospace;
+    background-color: #f9f4e8;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 95%, rgba(0, 0, 0, 0.05) 95%);
+    background-size: 100% 20px;
+    background-attachment: fixed;
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+    line-height: 1.8;
     color: #333;
 }
 
+/* Header */
 header {
-    background: #c2b280;
-    padding: 20px;
+    background: linear-gradient(135deg, #d4a017 0%, #e6b800 100%);
+    padding: 20px 10px 5px;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 3px solid #8b5e34;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+header:hover {
+    transform: translateY(-2px);
 }
 
 header h1 {
-    margin: 0;
-    font-size: 2.5em;
+    margin: 0 0 10px;
+    font-size: 2.8em;
     color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
 }
 
+/* Nawigacja */
 nav ul {
     list-style: none;
     padding: 0;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    margin: 0;
 }
 
+/* Styl dla linków - efekt zakładek notatnika */
 nav ul li {
-    margin: 0 15px;
+    margin: 0 10px;
+    position: relative;
 }
 
 nav ul li a {
+    display: inline-block;
     text-decoration: none;
     font-weight: bold;
     color: #5a4634;
-    transition: color 0.3s;
+    font-size: 1.2em;
+    padding: 10px 16px;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    top: 3px;
+    transition: top 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #8b5e34;
+    border-bottom: none;
 }
 
+/* Efekt po najechaniu */
 nav ul li a:hover {
-    color: #fff;
+    top: -5px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Jednolite kolory dla zakładek */
+nav ul li:nth-child(1) a { background: #ff9999; }
+nav ul li:nth-child(2) a { background: #87CEEB; }
+nav ul li:nth-child(3) a { background: #98FF98; }
+nav ul li:nth-child(4) a { background: #FFD700; }
+nav ul li:nth-child(5) a { background: #DDA0DD; }
+nav ul li:nth-child(6) a { background: #FFA07A; }
+
+/* Kontener główny */
 .container {
-    max-width: 1200px; /* Zwiększona szerokość kontenera */
-    margin: auto;
-    padding: 40px 20px; /* Większy padding */
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
     position: relative;
 }
 
+/* Style dla karteczek */
 .note {
-    background: #fffacd;
-    padding: 40px; /* Większy padding wewnątrz karteczek */
-    margin: 80px 0; /* Większe marginesy między karteczkami */
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    width: 70%; /* Większa szerokość karteczek */
+    background: #fffef0;
+    padding: 35px;
+    margin: 40px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    border-left: 4px dashed #d4a017;
+    border-radius: 0 15px 15px 0;
+    width: 85%;
     position: relative;
-    transition: transform 0.5s, opacity 0.5s;
-    opacity: 0;
-    border: 1px solid #ffcc80;
+    transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Karteczki z lewej strony */
+.note:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
 .note:nth-child(odd) {
-    transform: translateX(-100%); /* Początkowo poza ekranem z lewej */
+    transform: translateX(-50%);
     margin-left: 0;
 }
 
-/* Karteczki z prawej strony */
 .note:nth-child(even) {
-    transform: translateX(100%); /* Początkowo poza ekranem z prawej */
+    transform: translateX(50%);
     margin-left: auto;
     margin-right: 0;
 }
 
-/* Efekt pojawiania się karteczek */
 .note.visible {
-    transform: translateX(0); /* Karteczki wracają na swoje miejsce */
+    transform: translateX(0);
     opacity: 1;
 }
 
-/* About Section */
-.about {
-    background: #fff;
-    padding: 40px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Projects Section */
-.projects {
-    background: #fff;
-    padding: 40px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.project-item {
-    margin-bottom: 20px;
-}
-
-/* Contact Form */
-.contact-form {
-    background: #fff;
-    padding: 40px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* News Section */
-.news {
-    background: #fff;
-    padding: 40px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.news-item {
-    margin-bottom: 20px;
-}
-
-.news-item {
-    border: 1px solid #ddd;
-    padding: 16px;
-    margin-bottom: 16px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-.news-item h3 {
-    margin-top: 0;
-}
-
-.news-item p {
-    margin: 8px 0;
-}
-
-.news-item a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.news-item a:hover {
-    text-decoration: underline;
+.note::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 20px;
+    width: 10px;
+    height: 10px;
+    background: #f9f4e8;
+    border: 2px solid #d4a017;
+    border-radius: 50%;
+    box-shadow: 0 25px 0 #f9f4e8, 0 50px 0 #f9f4e8;
 }
 
 /* Blog Section */
-.blog {
-    background: #fff;
-    padding: 40px;
-    margin: 40px 0;
+.blog-posts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.blog-posts .note {
+    flex: 1 1 45%;
+    margin: 20px;
+}
+
+#blog-posts-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #fffef0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#blog-posts-container table th,
+#blog-posts-container table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px dashed #d4a017;
+}
+
+#blog-posts-container table th {
+    background: linear-gradient(135deg, #d4a017, #e6b800);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+#blog-posts-container table tr:nth-child(even) {
+    background: #fef9e7;
+}
+
+#blog-posts-container table tr:hover {
+    background: #f7e8c3;
 }
 
 .blog-post {
-    background: #fffacd;
-    padding: 20px;
-    margin: 20px 0;
+    background: #fffef0;
+    padding: 18px;
+    margin: 12px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, opacity 0.3s;
+    transition: transform 0.3s ease;
 }
 
 .blog-post:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+    transform: translateY(-3px);
 }
 
+/* Formularz dodawania wpisu */
+#add-post-form {
+    background: #fffef0;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+#add-post-form input,
+#add-post-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px dashed #d4a017;
+    border-radius: 6px;
+    background: #fef9e7;
+    font-family: 'Patrick Hand', 'Courier New', monospace;
+    transition: border-color 0.3s ease;
+}
+
+#add-post-form input:focus,
+#add-post-form textarea:focus {
+    border-color: #e6b800;
+    outline: none;
+}
+
+/* Formularz kontaktowy */
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px dashed #d4a017;
+    border-radius: 6px;
+    background: #fef9e7;
+    font-family: 'Patrick Hand', 'Courier New', monospace;
+    transition: border-color 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #e6b800;
+    outline: none;
+}
+
+/* News Section */
+.news-item {
+    background: #fffef0;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.news-item:hover {
+    transform: translateY(-3px);
+}
+
+.news-item a {
+    color: #8b5e34;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.news-item a:hover {
+    color: #e6b800;
+}
+
+/* Przyciski */
+button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: 1px solid #8b5e34;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    background: linear-gradient(135deg, #f7e8c3, #fff8e1);
+    color: #5a4634;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Patrick Hand', 'Courier New', monospace;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #e6b800, #d4a017);
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Specyficzne style dla przycisków w blogu */
+#blog-posts-container table td button.edit:hover { background: #87CEEB; }
+#blog-posts-container table td button.delete:hover { background: #FF9999; }
+button#add-post-btn:hover { background: #98FF98; }
+#add-post-form button[type="submit"]:hover { background: #98FF98; }
+button#cancel-add:hover { background: #DDA0DD; }
+
+/* Kontrolki bloga */
+.controls {
+    margin: 20px 0;
+}
+
+.controls label {
+    margin-right: 10px;
+    font-family: 'Patrick Hand', 'Courier New', monospace;
+}
+
+.controls select,
+.controls input {
+    padding: 8px;
+    margin-right: 20px;
+    border: 1px dashed #d4a017;
+    border-radius: 6px;
+    background: #fef9e7;
+    font-family: 'Patrick Hand', 'Courier New', monospace;
+    transition: border-color 0.3s ease;
+}
+
+.controls select:focus,
+.controls input:focus {
+    border-color: #e6b800;
+    outline: none;
+}
+
+/* Stopka */
 footer {
     text-align: center;
-    background: #c2b280;
-    padding: 20px; /* Większy padding w stopce */
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #d4a017, #8b5e34);
+    padding: 15px;
+    box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.15);
     color: #fff;
+    font-size: 1em;
+    transition: transform 0.3s ease;
+}
+
+footer:hover {
+    transform: translateY(-3px);
+}
+
+footer p {
+    margin: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .blog-posts .note {
+        flex: 1 1 100%;
+    }
+
+    #blog-posts-container table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .note {
+        width: 90%;
+    }
+
+    nav ul li {
+        margin: 0 5px;
+    }
+
+    nav ul li a {
+        padding: 8px 12px;
+        font-size: 1em;
+    }
+
+    nav ul li a:hover {
+        top: -3px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    footer {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+}
+
+@media (min-width: 769px) {
+    #blog-posts-container table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 }

@@ -21,21 +21,31 @@
         </nav>
     </header>
     <div class="container">
-        <div class="note">
-            <h2>Blog</h2>
-            <div class="blog-post">
-                <h3>Wpis 1</h3>
-                <p>Treść wpisu 1...</p>
-            </div>
-            <div class="blog-post">
-                <h3>Wpis 2</h3>
-                <p>Treść wpisu 2...</p>
-            </div>
-            <div class="blog-post">
-                <h3>Wpis 3</h3>
-                <p>Treść wpisu 3...</p>
-            </div>
-            <!-- Add more blog posts as needed -->
+        <div class="controls">
+            <label for="sort">Sortuj według:</label>
+            <select id="sort">
+                <option value="title-asc">Tytuł A-Z</option>
+                <option value="title-desc">Tytuł Z-A</option>
+                <option value="id-asc">ID rosnąco</option>
+                <option value="id-desc">ID malejąco</option>
+            </select>
+            <label for="filter">Filtruj:</label>
+            <input type="text" id="filter" placeholder="Szukaj w tytule lub treści">
+        </div>
+        <button id="add-post-btn">Dodaj nowy wpis</button>
+        <div id="add-post-form" style="display: none;">
+            <h3>Dodaj nowy wpis</h3>
+            <form>
+                <label for="title">Tytuł:</label>
+                <input type="text" id="title" required>
+                <label for="body">Treść:</label>
+                <textarea id="body" required></textarea>
+                <button type="submit">Zapisz</button>
+                <button type="button" id="cancel-add">Anuluj</button>
+            </form>
+        </div>
+        <div class="blog-posts" id="blog-posts-container">
+            <!-- Wpisy blogowe będą wstawiane tutaj -->
         </div>
     </div>
     <footer>
