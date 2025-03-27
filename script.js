@@ -1,10 +1,66 @@
+// Funkcje globalne dla p5.js (poza DOMContentLoaded, aby były dostępne od razu)
+if (document.getElementById('particle-canvas')) {
+    let particles = [];
+
+    let sketch = function(p) {
+        p.setup = function() {
+            let canvas = p.createCanvas(400, 300);
+            canvas.parent('particle-canvas');
+            p.background(245, 240, 220); // Kremowe tło
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(p));
+            }
+        };
+
+        p.draw = function() {
+            p.background(245, 240, 220); // Odświeża tło w każdej klatce
+            for (let particle of particles) {
+                particle.update();
+                particle.show();
+            }
+        };
+
+        class Particle {
+            constructor(p5) {
+                this.p = p5;
+                this.x = this.p.random(this.p.width);
+                this.y = this.p.random(this.p.height);
+                this.vx = this.p.random(-1, 1);
+                this.vy = this.p.random(-1, 1);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > this.p.width) this.vx *= -1;
+                if (this.y < 0 || this.y > this.p.height) this.vy *= -1;
+            }
+            show() {
+                this.p.fill(212, 160, 23); // Żółty kolor (#d4a017)
+                this.p.noStroke();
+                this.p.ellipse(this.x, this.y, 10);
+            }
+        }
+
+        window.resetParticles = function() {
+            particles = [];
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(p));
+            }
+        };
+    };
+
+    // Inicjalizacja instancji p5.js
+    new p5(sketch);
+}
+
+// Reszta kodu w DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
     let allPosts = [];
     let currentEditingPostId = null;
 
     const notes = document.querySelectorAll(".note");
 
-    // Funkcja do sprawdzania widoczności notatek (wspólna dla obu podstron)
+    // Funkcja do sprawdzania widoczności notatek
     const checkVisibility = () => {
         const allNotes = document.querySelectorAll(".note");
         allNotes.forEach((note, index) => {
@@ -29,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Logika dla strony blogowej (blog.html)
     if (document.getElementById('blog-posts-container')) {
-        // Pobieranie wpisów z API
         const fetchBlogPosts = async () => {
             try {
                 const response = await fetch('https://jsonplaceholder.typicode.com/posts');
@@ -41,14 +96,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
 
-        // Wyświetlanie wpisów
         const displayBlogPosts = (posts) => {
             const container = document.getElementById('blog-posts-container');
             container.innerHTML = '';
             const isDesktop = window.innerWidth > 768;
 
             if (isDesktop) {
-                // Tabela dla desktopów
                 const table = document.createElement('table');
                 table.innerHTML = `
                     <thead>
@@ -75,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
                 container.appendChild(table);
             } else {
-                // Karty dla urządzeń mobilnych
                 posts.forEach(post => {
                     const postElement = document.createElement('div');
                     postElement.classList.add('note', 'blog-post');
@@ -91,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
             checkVisibility();
         };
 
-        // Sortowanie
         const sortPosts = (posts, sortValue) => {
             const [key, order] = sortValue.split('-');
             return [...posts].sort((a, b) => {
@@ -103,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         };
 
-        // Renderowanie z filtrowaniem i sortowaniem
         const renderBlogPosts = () => {
             const filterValue = document.getElementById('filter').value.toLowerCase();
             const sortValue = document.getElementById('sort').value;
@@ -118,7 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
             displayBlogPosts(posts);
         };
 
-        // Dodawanie i edytowanie wpisu
         document.getElementById('add-post-btn').addEventListener('click', () => {
             document.querySelector('#add-post-form h3').textContent = 'Dodaj nowy wpis';
             document.getElementById('title').value = '';
@@ -166,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Edycja wpisu
         window.editPost = (postId) => {
             const post = allPosts.find(p => p.id === postId);
             if (post) {
@@ -178,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
 
-        // Usuwanie wpisu
         window.deletePost = async (postId) => {
             if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
                 try {
@@ -194,14 +241,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
 
-        // Event listeners dla sortowania i filtrowania
         document.getElementById('sort').addEventListener('change', renderBlogPosts);
         document.getElementById('filter').addEventListener('input', renderBlogPosts);
 
-        // Początkowe załadowanie wpisów
         fetchBlogPosts();
-
-        // Aktualizacja przy zmianie rozmiaru okna
         window.addEventListener('resize', renderBlogPosts);
     }
 
@@ -252,4 +295,28 @@ document.addEventListener("DOMContentLoaded", function () {
         // Fetch the latest news when the page loads
         fetchLatestNews();
     }
+
+    // Logika dla strony projektów (projects.html)
+    const fetchProjects = async () => {
+        try {
+            const response = await fetch('https://api.github.com/users/C-BULLKA/repos');
+            const repos = await response.json();
+            const gallery = document.getElementById('project-gallery');
+            gallery.innerHTML = ''; // Czyścimy galerię przed dodaniem nowych elementów
+            repos.slice(0, 3).forEach(repo => { // Ograniczamy do 3 projektów
+                const card = document.createElement('div');
+                card.classList.add('project-card');
+                card.innerHTML = `
+                    <h3>Projekt: ${repo.name}</h3>
+                    <p>${repo.description || 'Brak opisu'}</p>
+                    <a href="${repo.html_url}" target="_blank">Zobacz na GitHub</a>
+                `;
+                gallery.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Błąd pobierania projektów:', error);
+        }
+    };
+
+    if (document.getElementById('project-gallery')) fetchProjects();
 });

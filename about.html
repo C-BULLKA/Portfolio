@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O mnie</title>
+    <title>Labolatorium</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>Moje Portfolio</h1>
         <nav>
             <ul>
                 <li><a href="index.html">Strona Główna</a></li>
-                <li><a href="about.html">O mnie</a></li>
+                <li><a href="about.html">Labolatorium</a></li>
                 <li><a href="projects.html">Projekty</a></li>
                 <li><a href="contact.html">Kontakt</a></li>
                 <li><a href="news.html">Nowości</a></li>
@@ -22,8 +22,18 @@
     </header>
     <div class="container">
         <div class="note">
-            <h2>O mnie</h2>
-            <p>Jestem studentem informatyki na Akademii Tarnowskiej. Interesuję oraz kształtuję się w tworzeniu gier oraz grafiki komputerowej, a także rozwijam swoje umiejętności w zakresie programowania webowego. Pasjonuję się technologiami takimi jak Unreal Engine, a także HTML, CSS i JavaScript, które wykorzystuję do tworzenia swoich projektów i wizualizacji pomysłów.</p>
+            <h2>Laboratorium Eksperymentów</h2>
+            <p>Witaj w moim laboratorium! Tutaj testuję pomysły i prezentuję, co potrafię.</p>
+            <div class="experiment" id="particle-experiment">
+                <h3>Eksperyment 1: Taniec Cząsteczek</h3>
+                <canvas id="particle-canvas"></canvas>
+                <hr>
+                <button onclick="resetParticles()">Resetuj</button>
+            </div>
+            <div class="experiment">
+                <h3>Eksperyment 2: Mini-Gra</h3>
+                <p>Kliknij, aby uniknąć przeszkód (wkrótce!)</p>
+            </div>
         </div>
     </div>
     <footer>

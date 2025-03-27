@@ -87,7 +87,7 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
 
 /* Kontener główny */
 .container {
-    max-width: 1100px;
+    max-width: 1400px; /* Zwiększona szerokość dla większych ekranów */
     margin: 30px auto;
     padding: 0 20px;
     position: relative;
@@ -347,7 +347,60 @@ footer p {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsywność */
+/* Style dla galerii projektów */
+.project-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Reset stylów .note dla .project-gallery */
+.note:has(.project-gallery) {
+    width: 100%;
+    transform: none !important;
+    margin: 40px 0;
+    padding: 35px;
+}
+
+/* Usunięcie przesunięć dla .note zawierającego .project-gallery */
+.note:has(.project-gallery):nth-child(odd),
+.note:has(.project-gallery):nth-child(even) {
+    transform: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.project-card {
+    background: #fffef0;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-sizing: border-box;
+    flex: 1 1 calc(33.33% - 20px); /* 3 kolumny na większych ekranach */
+    min-width: 300px; /* Minimalna szerokość dla lepszej czytelności */
+    max-width: calc(33.33% - 20px);
+}
+
+/* Responsywność dla galerii projektów */
+@media (max-width: 1199px) and (min-width: 769px) {
+    .project-card {
+        flex: 1 1 calc(50% - 20px); /* 2 kolumny */
+        max-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .project-card {
+        flex: 1 1 100%; /* 1 kolumna */
+        max-width: 100%;
+    }
+}
+
+/* Ogólna responsywność */
 @media (max-width: 768px) {
     .blog-posts .note {
         flex: 1 1 100%;
@@ -391,4 +444,15 @@ footer p {
         width: 100%;
         border-collapse: collapse;
     }
+}
+
+/* Style dla eksperymentów */
+.experiment {
+    margin: 20px 0;
+    text-align: center;
+}
+
+canvas {
+    border: 1px dashed #d4a017;
+    border-radius: 10px;
 }
