@@ -90,20 +90,25 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
     max-width: 1400px; /* Zwiększona szerokość dla większych ekranów */
     margin: 30px auto;
     padding: 0 20px;
-    position: relative;
+    display: flex; /* Dodano Flexbox dla lepszego układu */
+    flex-direction: column; /* Układ pionowy */
+    align-items: center; /* Centrowanie dzieci */
+    width: 100%; /* Zapewnia dopasowanie do ekranu */
+    box-sizing: border-box; /* Uwzględnia padding w szerokości */
 }
 
 /* Style dla karteczek */
 .note {
     background: #fffef0;
     padding: 35px;
-    margin: 40px 0;
+    margin: 20px 0; /* Zmniejszono margines dla spójności z Flexbox */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
     border-left: 4px dashed #d4a017;
     border-radius: 0 15px 15px 0;
-    width: 85%;
-    position: relative;
+    width: 100%; /* Pełna szerokość w kontenerze zamiast 85% */
+    max-width: 900px; /* Ograniczenie maksymalnej szerokości */
+    box-sizing: border-box; /* Uwzględnia padding i border */
     transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
 }
 
@@ -113,19 +118,25 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
 }
 
 .note:nth-child(odd) {
-    transform: translateX(-50%);
-    margin-left: 0;
+    transform: none; /* Usunięto translateX */
+    margin-left: auto; /* Centrowanie */
+    margin-right: auto; /* Centrowanie */
 }
 
 .note:nth-child(even) {
-    transform: translateX(50%);
-    margin-left: auto;
-    margin-right: 0;
+    transform: none; /* Usunięto translateX */
+    margin-left: auto; /* Centrowanie */
+    margin-right: auto; /* Centrowanie */
 }
 
 .note.visible {
-    transform: translateX(0);
+    transform: translateY(0); /* Zmiana na animację w pionie */
     opacity: 1;
+}
+
+.note:not(.visible) { /* Dodano dla początkowego stanu */
+    transform: translateY(20px); /* Przesunięcie w dół przed pojawieniem */
+    opacity: 0;
 }
 
 .note::before {
@@ -354,13 +365,16 @@ footer p {
     justify-content: space-between;
     width: 100%;
     box-sizing: border-box;
+    max-width: 1400px; /* Dopasowanie do szerokości .container */
+    margin: 0 auto; /* Centrowanie galerii */
 }
 
 /* Reset stylów .note dla .project-gallery */
 .note:has(.project-gallery) {
     width: 100%;
+    max-width: 1400px; /* Zwiększono, aby pomieścić 3 kolumny */
     transform: none !important;
-    margin: 40px 0;
+    margin: 20px 0; /* Spójność z innymi .note */
     padding: 35px;
 }
 
@@ -380,22 +394,22 @@ footer p {
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     box-sizing: border-box;
-    flex: 1 1 calc(33.33% - 20px); /* 3 kolumny na większych ekranach */
-    min-width: 300px; /* Minimalna szerokość dla lepszej czytelności */
-    max-width: calc(33.33% - 20px);
+    flex: 0 0 calc(33.33% - 20px); /* 3 kolumny na największych ekranach, bez rozciągania */
+    min-width: 300px; /* Minimalna szerokość dla czytelności */
+    max-width: calc(33.33% - 20px); /* Maksymalna szerokość dla 3 kolumn */
 }
 
 /* Responsywność dla galerii projektów */
 @media (max-width: 1199px) and (min-width: 769px) {
     .project-card {
-        flex: 1 1 calc(50% - 20px); /* 2 kolumny */
+        flex: 0 0 calc(50% - 20px); /* 2 kolumny */
         max-width: calc(50% - 20px);
     }
 }
 
 @media (max-width: 768px) {
     .project-card {
-        flex: 1 1 100%; /* 1 kolumna */
+        flex: 0 0 100%; /* 1 kolumna */
         max-width: 100%;
     }
 }
@@ -413,7 +427,8 @@ footer p {
     }
 
     .note {
-        width: 90%;
+        padding: 20px; /* Mniejszy padding na małych ekranach */
+        max-width: 100%; /* Pełna szerokość na mobile */
     }
 
     nav ul li {
