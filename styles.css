@@ -14,7 +14,7 @@ body {
 /* Header */
 header {
     background: linear-gradient(135deg, #d4a017 0%, #e6b800 100%);
-    padding: 20px 10px 5px;
+    padding: 20px 10px 5px; /* Zachowujemy oryginalne padding */
     text-align: center;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     position: sticky;
@@ -22,7 +22,7 @@ header {
     z-index: 1000;
     border-bottom: 3px solid #8b5e34;
     transition: transform 0.3s ease;
-    position: relative;
+    position: relative; /* Potrzebne dla pozycjonowania absolutnego logo */
 }
 
 header:hover {
@@ -37,12 +37,25 @@ header h1 {
     letter-spacing: 1px;
 }
 
+/* Logo */
+.logo {
+    position: absolute; /* Pozycjonowanie absolutne, aby nie wpływać na wysokość header */
+    left: 40px; /* Odstęp od lewej krawędzi */
+    bottom: 0px;
+    top: 1px;
+}
+
+.logo img {
+    max-height: 80px; /* Dopasowana wysokość do menu */
+    width: auto;
+}
+
 /* Nawigacja */
 nav ul {
     list-style: none;
     padding: 0;
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Menu wyśrodkowane */
     flex-wrap: wrap;
     margin: 0;
 }
@@ -431,6 +444,16 @@ footer p {
         max-width: 100%; /* Pełna szerokość na mobile */
     }
 
+    .logo {
+        position: static; /* Na małych ekranach logo wraca do normalnego przepływu */
+        text-align: center; /* Wyśrodkowanie logo */
+        margin-bottom: 10px; /* Odstęp od menu */
+    }
+
+    .logo img {
+        max-height: 40px; /* Mniejsze logo na mobile */
+    }
+
     nav ul li {
         margin: 0 5px;
     }
@@ -470,4 +493,25 @@ footer p {
 canvas {
     border: 1px dashed #d4a017;
     border-radius: 10px;
+}
+
+/* Style dla Kącika Twórcy Gier */
+.gamedev-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.gamedev-section pre {
+    background: #fef9e7;
+    padding: 15px;
+    border: 1px dashed #d4a017;
+    border-radius: 6px;
+    text-align: left;
+    overflow-x: auto;
+}
+
+.gamedev-section canvas {
+    border: 1px dashed #d4a017;
+    border-radius: 10px;
+    background: #f9f4e8;
 }

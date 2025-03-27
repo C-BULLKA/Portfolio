@@ -1,58 +1,3 @@
-// Funkcje globalne dla p5.js (poza DOMContentLoaded, aby były dostępne od razu)
-if (document.getElementById('particle-canvas')) {
-    let particles = [];
-
-    let sketch = function(p) {
-        p.setup = function() {
-            let canvas = p.createCanvas(400, 300);
-            canvas.parent('particle-canvas');
-            p.background(245, 240, 220); // Kremowe tło
-            for (let i = 0; i < 50; i++) {
-                particles.push(new Particle(p));
-            }
-        };
-
-        p.draw = function() {
-            p.background(245, 240, 220); // Odświeża tło w każdej klatce
-            for (let particle of particles) {
-                particle.update();
-                particle.show();
-            }
-        };
-
-        class Particle {
-            constructor(p5) {
-                this.p = p5;
-                this.x = this.p.random(this.p.width);
-                this.y = this.p.random(this.p.height);
-                this.vx = this.p.random(-1, 1);
-                this.vy = this.p.random(-1, 1);
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.x < 0 || this.x > this.p.width) this.vx *= -1;
-                if (this.y < 0 || this.y > this.p.height) this.vy *= -1;
-            }
-            show() {
-                this.p.fill(212, 160, 23); // Żółty kolor (#d4a017)
-                this.p.noStroke();
-                this.p.ellipse(this.x, this.y, 10);
-            }
-        }
-
-        window.resetParticles = function() {
-            particles = [];
-            for (let i = 0; i < 50; i++) {
-                particles.push(new Particle(p));
-            }
-        };
-    };
-
-    // Inicjalizacja instancji p5.js
-    new p5(sketch);
-}
-
 // Reszta kodu w DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
     let allPosts = [];
@@ -82,6 +27,114 @@ document.addEventListener("DOMContentLoaded", function () {
         checkVisibility();
     });
     checkVisibility();
+
+    // Logika dla "Tańca Cząsteczek" (lab.html) z Canvas API
+// Logika dla "Tańca Cząsteczek" (lab.html) z Canvas API
+if (document.getElementById('particle-canvas')) {
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    // Klasa Particle z dodatkowymi właściwościami
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = Math.random() * 2 - 1; // Prędkość od -1 do 1
+            this.vy = Math.random() * 2 - 1;
+            this.color = '#d4a017'; // Początkowy kolor (żółty)
+            this.radius = 5; // Początkowy rozmiar
+            this.cornerHits = 0; // Licznik uderzeń w róg
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Sprawdzanie uderzeń w ściany i zmiana koloru
+            if (this.x < this.radius || this.x > canvas.width - this.radius) {
+                this.vx *= -1;
+                this.changeColor(); // Zmiana koloru przy uderzeniu w pionową ścianę
+            }
+            if (this.y < this.radius || this.y > canvas.height - this.radius) {
+                this.vy *= -1;
+                this.changeColor(); // Zmiana koloru przy uderzeniu w poziomą ścianę
+            }
+
+            // Sprawdzanie uderzeń w rogi i zmniejszanie
+            if (
+                (this.x <= this.radius && this.y <= this.radius) || // Lewy górny róg
+                (this.x >= canvas.width - this.radius && this.y <= this.radius) || // Prawy górny róg
+                (this.x <= this.radius && this.y >= canvas.height - this.radius) || // Lewy dolny róg
+                (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius) // Prawy dolny róg
+            ) {
+                this.cornerHits++;
+                if (this.cornerHits < 3) {
+                    this.radius = Math.max(1, this.radius - 1); // Zmniejsz o 1, ale nie poniżej 1
+                }
+            }
+        }
+
+        // Funkcja zmiany koloru
+        changeColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            this.color = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        show() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Sprawdzanie, czy cząsteczka powinna zniknąć
+        shouldRemove() {
+            return this.cornerHits >= 3;
+        }
+    }
+
+    // Inicjalizacja cząsteczek
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    // Funkcja animacji
+    function animateParticles() {
+        // Czyszczenie canvasu
+        ctx.fillStyle = '#f5f0dc'; // Kremowe tło (RGB: 245, 240, 220)
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Aktualizacja i rysowanie cząsteczek
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const particle = particles[i];
+            particle.update();
+            particle.show();
+
+            // Usuwanie cząsteczki po 3 uderzeniach w róg
+            if (particle.shouldRemove()) {
+                particles.splice(i, 1);
+            }
+        }
+
+        // Zapętlona animacja
+        requestAnimationFrame(animateParticles);
+    }
+
+    // Start
+    initParticles();
+    animateParticles();
+
+    // Reset cząsteczek
+    document.getElementById('reset-particles').addEventListener('click', () => {
+        initParticles();
+    });
+}
 
     // Logika dla strony blogowej (blog.html)
     if (document.getElementById('blog-posts-container')) {
@@ -295,6 +348,88 @@ document.addEventListener("DOMContentLoaded", function () {
         // Fetch the latest news when the page loads
         fetchLatestNews();
     }
+
+// Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
+if (document.getElementById('vehicle-sim')) {
+    const canvas = document.getElementById('vehicle-sim');
+    const ctx = canvas.getContext('2d');
+    let x = 0;
+    const speed = 2;
+
+    function drawVehicle() {
+        // Czyszczenie canvasu
+        ctx.fillStyle = '#f9f4e8'; // Tło zgodne z CSS
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Rysowanie pojazdu
+        ctx.fillStyle = '#d4a017'; // Kolor żółty
+        ctx.fillRect(x, 150, 50, 30);
+
+        // Aktualizacja pozycji
+        x += speed;
+        if (x > canvas.width) x = -50; // Reset po wyjściu za ekran
+
+        // Zapętlona animacja
+        requestAnimationFrame(drawVehicle);
+    }
+
+    // Start animacji
+    drawVehicle();
+
+    // Reset pozycji po kliknięciu
+    document.getElementById('reset-sim').addEventListener('click', () => {
+        x = 0;
+    });
+}
+
+// Generator pomysłów na gry
+if (document.getElementById('generate-idea')) {
+    const gameIdeas = [
+        "Gra wyścigowa w kosmosie z grawitacją planet",
+        "RPG w świecie fantasy z dynamiczną pogodą",
+        "Symulator projektowania poziomów w grach",
+        "Platformówka z mechaniką zmiany czasu",
+        "Strzelanka z proceduralnie generowanymi broniami",
+        "Symulator przetrwania na opuszczonej stacji kosmicznej z zagadkami logicznymi",
+        "Gra strategiczna o budowie imperium w świecie steampunkowym",
+        "Przygodówka point-and-click w realiach cyberpunkowego miasta przyszłości",
+        "Symulator wyścigów dronów z personalizacją maszyn",
+        "Gra logiczna o manipulacji czasem w celu rozwiązania łamigłówek przestrzennych",
+        "RPG w świecie mitologii nordyckiej z dynamicznymi wyborami moralnymi",
+        "Symulator rolnictwa na obcej planecie z unikalnymi roślinami i stworzeniami",
+        "Gra akcji o walce z gigantycznymi maszynami w postapokaliptycznym świecie",
+        "Platformówka 2D z mechaniką zmiany grawitacji",
+        "Symulator hakera próbującego złamać zabezpieczenia globalnej korporacji",
+        "Gra muzyczna, w której rytm steruje akcjami bohatera w walce",
+        "Strategia czasu rzeczywistego o kolonizacji dna oceanu",
+        "Przygodowa gra eksploracyjna w świecie snów z surrealistycznymi krajobrazami",
+        "Symulator projektanta mody w świecie fantasy z magią tkanin",
+        "Gra survivalowa o przetrwaniu w dżungli pełnej prehistorycznych stworzeń",
+        "Taktyczna gra turowa o dowodzeniu oddziałem rebeliantów w dystopii",
+        "Symulator lotów balonem z misjami ratunkowymi w górach",
+        "Gra logiczna o budowie maszyn Rube Goldberga do rozwiązywania problemów",
+        "RPG w realiach średniowiecza z mechaniką handlu i dyplomacji",
+        "Strzelanka kooperacyjna w kosmosie z losowo generowanymi planetami",
+        "Gra edukacyjna o programowaniu robotów w fabryce przyszłości",
+        "Symulator życia smoka w świecie fantasy z ewolucją umiejętności",
+        "Platformówka z mechaniką malowania świata, które zmienia otoczenie",
+        "Gra detektywistyczna w wiktoriańskim Londynie z nadprzyrodzonymi elementami",
+        "Symulator wyścigów na hoverboardach w futurystycznym mieście",
+        "Strategia ekonomiczna o zarządzaniu miastem unoszącym się na chmurach",
+        "Gra akcji o ninja przemierzającym proceduralnie generowane poziomy",
+        "Symulator eksploracji jaskiń z zagadkami fizycznymi i skarbami",
+        "RPG w świecie, gdzie magia opiera się na matematyce i równaniach",
+        "Gra multiplayer o budowie i obronie zamków w realiach średniowiecza"
+    ];
+
+    const generateIdea = () => {
+        const idea = gameIdeas[Math.floor(Math.random() * gameIdeas.length)];
+        document.getElementById('game-idea').textContent = idea;
+    };
+
+    document.getElementById('generate-idea').addEventListener('click', generateIdea);
+    generateIdea(); // Wygeneruj pierwszy pomysł od razu
+}
 
     // Logika dla strony projektów (projects.html)
     const fetchProjects = async () => {
