@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTG</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Strona Główna</a></li>
+                <li><a href="lab.html">Labolatorium</a></li>
+                <li><a href="projects.html">Projekty</a></li>
+                <li><a href="ktg.html">KTG</a></li>
+                <li><a href="news.html">Nowości</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="note">
+            <h2>Kącik Twórcy Gier</h2>
+            <p>Moje zapiski z tworzenia gier i projekty w akcji!</p>
+            <div class="gamedev-section">
+                <h3>Ciekawostka Developerska</h3>
+                <p>Jak działa ruch w grze wyścigowej? Oto prosty kod w C++:</p>
+                <pre><code>float speed = 5.0f; // Prędkość pojazdu
+Vector2 position = {0, 0}; // Pozycja
+position.x += speed * deltaTime; // Ruch w poziomie</code></pre>
+            </div>
+            <div class="gamedev-section">
+                <h3>Symulacja Ruchu</h3>
+                <canvas id="vehicle-sim" width="400" height="200"></canvas>
+                <br>
+                <button id="reset-sim">Resetuj</button>
+            </div>
+            <div class="gamedev-section">
+                <h3>Zainspiruj się!</h3>
+                <p id="game-idea">Kliknij, aby wygenerować pomysł...</p>
+                <button id="generate-idea">Nowy Pomysł</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Moje Portfolio</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

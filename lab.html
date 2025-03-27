@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Labolatorium</title>
+    <title>Laboratorium</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
 </head>
 <body>
     <header>
         <nav>
             <ul>
                 <li><a href="index.html">Strona Główna</a></li>
-                <li><a href="about.html">Labolatorium</a></li>
+                <li><a href="lab.html">Laboratorium</a></li>
                 <li><a href="projects.html">Projekty</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="ktg.html">KTG</a></li>
                 <li><a href="news.html">Nowości</a></li>
                 <li><a href="blog.html">Blog</a></li>
             </ul>
@@ -26,9 +25,9 @@
             <p>Witaj w moim laboratorium! Tutaj testuję pomysły i prezentuję, co potrafię.</p>
             <div class="experiment" id="particle-experiment">
                 <h3>Eksperyment 1: Taniec Cząsteczek</h3>
-                <canvas id="particle-canvas"></canvas>
-                <hr>
-                <button onclick="resetParticles()">Resetuj</button>
+                <canvas id="particle-canvas" width="400" height="300"></canvas>
+                <br>
+                <button id="reset-particles">Resetuj</button>
             </div>
             <div class="experiment">
                 <h3>Eksperyment 2: Mini-Gra</h3>
@@ -37,7 +36,7 @@
         </div>
     </div>
     <footer>
-        <p>&copy; 2025 Moje Portfolio</p>
+        <p>© 2025 Moje Portfolio</p>
     </footer>
     <script src="script.js"></script>
 </body>
