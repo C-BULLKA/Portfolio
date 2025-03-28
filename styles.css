@@ -443,7 +443,7 @@ footer p {
 }
 
 /* Ogólna responsywność */
-@media (max-width: 1920px) {
+@media (max-width: 1366px) {
     .blog-posts .note {
         flex: 1 1 100%;
     }
@@ -494,7 +494,7 @@ footer p {
         font-size: 0.9em;
     }
 
-    /* Styl dla menu hamburger na ekranach poniżej 1920px */
+    /* Styl dla menu hamburger na ekranach poniżej 1366px */
     .menu-toggle {
         display: block; /* Pokaż przycisk */
     }
@@ -529,7 +529,7 @@ footer p {
     }
 }
 
-@media (min-width: 1921px) {
+@media (min-width: 1367px) {
     #blog-posts-container table {
         width: 100%;
         border-collapse: collapse;
@@ -607,21 +607,30 @@ canvas {
     display: none;
 }
 
+/* Paginacja */
 #pagination {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap; /* Pozwala elementom zawijać się na mniejszych ekranach */
     gap: 10px;
     margin-top: 20px;
+    padding: 10px; /* Dodatkowy padding dla lepszej czytelności */
+    max-width: 100%; /* Zapobiega wychodzeniu poza kontener */
+    box-sizing: border-box;
 }
 
-#pagination select, #pagination button {
-    padding: 5px 10px;
+#pagination select, 
+#pagination button {
+    padding: 8px 12px; /* Lepsze proporcje na mniejszych ekranach */
     font-size: 1em;
     background-color: #f9f4e8;
     border: 1px solid #d4a017;
     color: #d4a017;
     cursor: pointer;
+    border-radius: 6px; /* Spójne zaokrąglenie */
+    min-width: 60px; /* Minimalna szerokość dla czytelności */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #pagination button:disabled {
@@ -629,13 +638,42 @@ canvas {
     cursor: not-allowed;
 }
 
-/* Dodajemy efekt hover dla przycisków */
+/* Efekt hover dla przycisków */
 #pagination button:hover:not(:disabled) {
-    background-color: #d4a017; /* Tło zmienia się na żółte (kolor obramowania) */
+    background-color: #d4a017; /* Tło zmienia się na żółte */
     color: white; /* Tekst zmienia się na biały */
 }
 
 #pagination span {
     font-size: 1em;
     color: #d4a017;
+    padding: 0 5px; /* Lekki odstęp dla czytelności */
+}
+
+/* Responsywność paginacji */
+@media (max-width: 768px) {
+    #pagination {
+        flex-direction: column; /* Ustawienie w pionie na mniejszych ekranach */
+        gap: 8px; /* Mniejszy odstęp między elementami */
+    }
+
+    #pagination select, 
+    #pagination button {
+        width: 100%; /* Pełna szerokość na małych ekranach */
+        max-width: 200px; /* Ograniczenie maksymalnej szerokości */
+        margin: 0 auto; /* Centrowanie */
+    }
+
+    #pagination span {
+        text-align: center; /* Wyśrodkowanie tekstu */
+    }
+}
+
+@media (max-width: 480px) {
+    #pagination select, 
+    #pagination button {
+        padding: 6px 10px; /* Mniejszy padding na bardzo małych ekranach */
+        font-size: 0.9em; /* Mniejsza czcionka */
+        min-width: 50px; /* Mniejsza minimalna szerokość */
+    }
 }
