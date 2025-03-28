@@ -313,118 +313,133 @@ document.addEventListener("DOMContentLoaded", function () {
         window.addEventListener('resize', renderBlogPosts);
     }
 
-    // Logika dla strony nowości (news.html)
-    if (document.getElementById('news-container')) {
-        const newsContainer = document.getElementById('news-container');
-        const loadingSpinner = document.getElementById('loading-spinner'); // Pobierz spinner
-        console.log('newsContainer:', newsContainer); // Debug log
+// Logika dla strony nowości (news.html)
+if (document.getElementById('news-container')) {
+    const newsContainer = document.getElementById('news-container');
+    const loadingSpinner = document.getElementById('loading-spinner'); // Pobierz spinner
+    console.log('newsContainer:', newsContainer); // Debug log
 
-        // Function to fetch the latest MMO news
-        const fetchLatestNews = async () => {
-            try {
-                // Pokaż spinner przed rozpoczęciem ładowania
-                if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+    let allNews = []; // Przechowuje wszystkie pobrane newsy
+    let currentPage = 1; // Aktualna strona
+    let itemsPerPage = 5; // Domyślna liczba artykułów na stronę
 
-                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews'));
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+    // Funkcja do pobierania najnowszych wiadomości MMO
+    const fetchLatestNews = async () => {
+        try {
+            // Pokaż spinner przed rozpoczęciem ładowania
+            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+
+            const url = 'https://corsproxy.io/?' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews');
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
                 }
-                const data = await response.json();
-                console.log('Fetched data:', data); // Debug log
-                allNews = JSON.parse(data.contents); // Przechowaj wszystkie newsy
-                console.log('Parsed news data:', allNews); // Debug log
-                renderNewsPage(); // Wyświetl pierwszą stronę
-            } catch (error) {
-                console.error('Error fetching latest news:', error);
-                newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach. ${error.message}</p>`;
-                if (loadingSpinner) loadingSpinner.classList.add('hidden'); // Ukryj spinner w przypadku błędu
-            }
-        };
-
-        // Function to display news for the current page
-        const displayNews = (data) => {
-            newsContainer.innerHTML = ''; // Wyczyść kontener, usuwając spinner
-            if (!data || data.length === 0) {
-                newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
-                return;
-            }
-            data.forEach(news => {
-                console.log('News item:', news); // Debug log
-                const newsItem = `
-                    <div class="news-item note">
-                        <h3>${news.title}</h3>
-                        <p>${news.short_description}</p>
-                        <a href="${news.article_url}" target="_blank">Read more</a>
-                    </div>
-                `;
-                newsContainer.innerHTML += newsItem;
             });
-            checkVisibility(); // Wywołaj animację widoczności
-        };
 
-        // Function to render the current page
-        const renderNewsPage = () => {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedNews = allNews.slice(startIndex, endIndex);
-            displayNews(paginatedNews);
-            updatePaginationControls();
-        };
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-        // Function to update pagination controls
-        const updatePaginationControls = () => {
-            const totalPages = Math.ceil(allNews.length / itemsPerPage);
-            const paginationContainer = document.getElementById('pagination');
-            paginationContainer.innerHTML = '';
+            const data = await response.json();
+            console.log('Fetched data:', data); // Debug log
 
-            // Select dla liczby artykułów na stronę
-            const itemsPerPageSelect = document.createElement('select');
-            itemsPerPageSelect.id = 'items-per-page';
-            [5, 10, 15, 20].forEach(num => {
-                const option = document.createElement('option');
-                option.value = num;
-                option.textContent = `${num} na stronę`;
-                if (num === itemsPerPage) option.selected = true;
-                itemsPerPageSelect.appendChild(option);
-            });
-            itemsPerPageSelect.addEventListener('change', (e) => {
-                itemsPerPage = parseInt(e.target.value);
-                currentPage = 1; // Resetuj na pierwszą stronę
+            allNews = data; // corsproxy.io zwraca dane bezpośrednio w formacie JSON
+            console.log('Parsed news data:', allNews); // Debug log
+            renderNewsPage(); // Wyświetl pierwszą stronę
+        } catch (error) {
+            console.error('Error fetching latest news:', error);
+            newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach: ${error.message}. Spróbuj ponownie później.</p>`;
+        } finally {
+            // Ukryj spinner po zakończeniu żądania (sukces lub błąd)
+            if (loadingSpinner) loadingSpinner.classList.add('hidden');
+        }
+    };
+
+    // Funkcja wyświetlająca newsy dla bieżącej strony
+    const displayNews = (data) => {
+        newsContainer.innerHTML = ''; // Wyczyść kontener
+        if (!data || data.length === 0) {
+            newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
+            return;
+        }
+        data.forEach(news => {
+            console.log('News item:', news); // Debug log
+            const newsItem = `
+                <div class="news-item note">
+                    <h3>${news.title}</h3>
+                    <p>${news.short_description}</p>
+                    <a href="${news.article_url}" target="_blank">Read more</a>
+                </div>
+            `;
+            newsContainer.innerHTML += newsItem;
+        });
+        checkVisibility(); // Wywołaj animację widoczności
+    };
+
+    // Funkcja renderująca bieżącą stronę
+    const renderNewsPage = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedNews = allNews.slice(startIndex, endIndex);
+        displayNews(paginatedNews);
+        updatePaginationControls();
+    };
+
+    // Funkcja aktualizująca kontrolki paginacji
+    const updatePaginationControls = () => {
+        const totalPages = Math.ceil(allNews.length / itemsPerPage);
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        // Select dla liczby artykułów na stronę
+        const itemsPerPageSelect = document.createElement('select');
+        itemsPerPageSelect.id = 'items-per-page';
+        [5, 10, 15, 20].forEach(num => {
+            const option = document.createElement('option');
+            option.value = num;
+            option.textContent = `${num} na stronę`;
+            if (num === itemsPerPage) option.selected = true;
+            itemsPerPageSelect.appendChild(option);
+        });
+        itemsPerPageSelect.addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1; // Resetuj na pierwszą stronę
+            renderNewsPage();
+        });
+        paginationContainer.appendChild(itemsPerPageSelect);
+
+        // Przyciski paginacji
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Poprzednia';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
                 renderNewsPage();
-            });
-            paginationContainer.appendChild(itemsPerPageSelect);
+            }
+        });
+        paginationContainer.appendChild(prevButton);
 
-            // Przyciski paginacji
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Poprzednia';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderNewsPage();
-                }
-            });
-            paginationContainer.appendChild(prevButton);
+        const pageInfo = document.createElement('span');
+        pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
+        paginationContainer.appendChild(pageInfo);
 
-            const pageInfo = document.createElement('span');
-            pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
-            paginationContainer.appendChild(pageInfo);
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Następna';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderNewsPage();
+            }
+        });
+        paginationContainer.appendChild(nextButton);
+    };
 
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Następna';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderNewsPage();
-                }
-            });
-            paginationContainer.appendChild(nextButton);
-        };
-
-        // Fetch the latest news when the page loads
-        fetchLatestNews();
-    }
+    // Pobierz najnowsze wiadomości po załadowaniu strony
+    fetchLatestNews();
+}
 
     // Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
     if (document.getElementById('vehicle-sim')) {
