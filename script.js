@@ -1,7 +1,20 @@
 // Reszta kodu w DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
+    // Logika dla menu hamburger
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
     let allPosts = [];
     let currentEditingPostId = null;
+    let allNews = []; // Przechowuje wszystkie pobrane newsy
+    let currentPage = 1; // Aktualna strona
+    let itemsPerPage = 5; // Domyślna liczba artykułów na stronę
 
     const notes = document.querySelectorAll(".note");
 
@@ -29,112 +42,111 @@ document.addEventListener("DOMContentLoaded", function () {
     checkVisibility();
 
     // Logika dla "Tańca Cząsteczek" (lab.html) z Canvas API
-// Logika dla "Tańca Cząsteczek" (lab.html) z Canvas API
-if (document.getElementById('particle-canvas')) {
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
+    if (document.getElementById('particle-canvas')) {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-    // Klasa Particle z dodatkowymi właściwościami
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = Math.random() * 2 - 1; // Prędkość od -1 do 1
-            this.vy = Math.random() * 2 - 1;
-            this.color = '#d4a017'; // Początkowy kolor (żółty)
-            this.radius = 5; // Początkowy rozmiar
-            this.cornerHits = 0; // Licznik uderzeń w róg
-        }
-
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            // Sprawdzanie uderzeń w ściany i zmiana koloru
-            if (this.x < this.radius || this.x > canvas.width - this.radius) {
-                this.vx *= -1;
-                this.changeColor(); // Zmiana koloru przy uderzeniu w pionową ścianę
-            }
-            if (this.y < this.radius || this.y > canvas.height - this.radius) {
-                this.vy *= -1;
-                this.changeColor(); // Zmiana koloru przy uderzeniu w poziomą ścianę
+        // Klasa Particle z dodatkowymi właściwościami
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = Math.random() * 2 - 1; // Prędkość od -1 do 1
+                this.vy = Math.random() * 2 - 1;
+                this.color = '#d4a017'; // Początkowy kolor (żółty)
+                this.radius = 5; // Początkowy rozmiar
+                this.cornerHits = 0; // Licznik uderzeń w róg
             }
 
-            // Sprawdzanie uderzeń w rogi i zmniejszanie
-            if (
-                (this.x <= this.radius && this.y <= this.radius) || // Lewy górny róg
-                (this.x >= canvas.width - this.radius && this.y <= this.radius) || // Prawy górny róg
-                (this.x <= this.radius && this.y >= canvas.height - this.radius) || // Lewy dolny róg
-                (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius) // Prawy dolny róg
-            ) {
-                this.cornerHits++;
-                if (this.cornerHits < 3) {
-                    this.radius = Math.max(1, this.radius - 1); // Zmniejsz o 1, ale nie poniżej 1
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Sprawdzanie uderzeń w ściany i zmiana koloru
+                if (this.x < this.radius || this.x > canvas.width - this.radius) {
+                    this.vx *= -1;
+                    this.changeColor(); // Zmiana koloru przy uderzeniu w pionową ścianę
+                }
+                if (this.y < this.radius || this.y > canvas.height - this.radius) {
+                    this.vy *= -1;
+                    this.changeColor(); // Zmiana koloru przy uderzeniu w poziomą ścianę
+                }
+
+                // Sprawdzanie uderzeń w rogi i zmniejszanie
+                if (
+                    (this.x <= this.radius && this.y <= this.radius) || // Lewy górny róg
+                    (this.x >= canvas.width - this.radius && this.y <= this.radius) || // Prawy górny róg
+                    (this.x <= this.radius && this.y >= canvas.height - this.radius) || // Lewy dolny róg
+                    (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius) // Prawy dolny róg
+                ) {
+                    this.cornerHits++;
+                    if (this.cornerHits < 3) {
+                        this.radius = Math.max(1, this.radius - 1); // Zmniejsz o 1, ale nie poniżej 1
+                    }
                 }
             }
-        }
 
-        // Funkcja zmiany koloru
-        changeColor() {
-            const r = Math.floor(Math.random() * 256);
-            const g = Math.floor(Math.random() * 256);
-            const b = Math.floor(Math.random() * 256);
-            this.color = `rgb(${r}, ${g}, ${b})`;
-        }
+            // Funkcja zmiany koloru
+            changeColor() {
+                const r = Math.floor(Math.random() * 256);
+                const g = Math.floor(Math.random() * 256);
+                const b = Math.floor(Math.random() * 256);
+                this.color = `rgb(${r}, ${g}, ${b})`;
+            }
 
-        show() {
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
+            show() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
 
-        // Sprawdzanie, czy cząsteczka powinna zniknąć
-        shouldRemove() {
-            return this.cornerHits >= 3;
-        }
-    }
-
-    // Inicjalizacja cząsteczek
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < 50; i++) {
-            particles.push(new Particle());
-        }
-    }
-
-    // Funkcja animacji
-    function animateParticles() {
-        // Czyszczenie canvasu
-        ctx.fillStyle = '#f5f0dc'; // Kremowe tło (RGB: 245, 240, 220)
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Aktualizacja i rysowanie cząsteczek
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const particle = particles[i];
-            particle.update();
-            particle.show();
-
-            // Usuwanie cząsteczki po 3 uderzeniach w róg
-            if (particle.shouldRemove()) {
-                particles.splice(i, 1);
+            // Sprawdzanie, czy cząsteczka powinna zniknąć
+            shouldRemove() {
+                return this.cornerHits >= 3;
             }
         }
 
-        // Zapętlona animacja
-        requestAnimationFrame(animateParticles);
-    }
+        // Inicjalizacja cząsteczek
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle());
+            }
+        }
 
-    // Start
-    initParticles();
-    animateParticles();
+        // Funkcja animacji
+        function animateParticles() {
+            // Czyszczenie canvasu
+            ctx.fillStyle = '#f5f0dc'; // Kremowe tło (RGB: 245, 240, 220)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Reset cząsteczek
-    document.getElementById('reset-particles').addEventListener('click', () => {
+            // Aktualizacja i rysowanie cząsteczek
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.update();
+                particle.show();
+
+                // Usuwanie cząsteczki po 3 uderzeniach w róg
+                if (particle.shouldRemove()) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Zapętlona animacja
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Start
         initParticles();
-    });
-}
+        animateParticles();
+
+        // Reset cząsteczek
+        document.getElementById('reset-particles').addEventListener('click', () => {
+            initParticles();
+        });
+    }
 
     // Logika dla strony blogowej (blog.html)
     if (document.getElementById('blog-posts-container')) {
@@ -304,30 +316,36 @@ if (document.getElementById('particle-canvas')) {
     // Logika dla strony nowości (news.html)
     if (document.getElementById('news-container')) {
         const newsContainer = document.getElementById('news-container');
+        const loadingSpinner = document.getElementById('loading-spinner'); // Pobierz spinner
         console.log('newsContainer:', newsContainer); // Debug log
 
         // Function to fetch the latest MMO news
         const fetchLatestNews = async () => {
             try {
+                // Pokaż spinner przed rozpoczęciem ładowania
+                if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+
                 const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews'));
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
                 console.log('Fetched data:', data); // Debug log
-                const newsData = JSON.parse(data.contents);
-                console.log('Parsed news data:', newsData); // Debug log
-                displayNews(newsData);
+                allNews = JSON.parse(data.contents); // Przechowaj wszystkie newsy
+                console.log('Parsed news data:', allNews); // Debug log
+                renderNewsPage(); // Wyświetl pierwszą stronę
             } catch (error) {
                 console.error('Error fetching latest news:', error);
-                newsContainer.innerHTML += `<p>Nie udało się załadować informacji o nowościach. ${error.message}</p>`;
+                newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach. ${error.message}</p>`;
+                if (loadingSpinner) loadingSpinner.classList.add('hidden'); // Ukryj spinner w przypadku błędu
             }
         };
 
-        // Function to display the news
+        // Function to display news for the current page
         const displayNews = (data) => {
+            newsContainer.innerHTML = ''; // Wyczyść kontener, usuwając spinner
             if (!data || data.length === 0) {
-                newsContainer.innerHTML += '<p>Brak nowości do wyświetlenia.</p>';
+                newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
                 return;
             }
             data.forEach(news => {
@@ -341,95 +359,154 @@ if (document.getElementById('particle-canvas')) {
                 `;
                 newsContainer.innerHTML += newsItem;
             });
-            // Call checkVisibility to trigger animation on newly inserted items
-            checkVisibility();
+            checkVisibility(); // Wywołaj animację widoczności
+        };
+
+        // Function to render the current page
+        const renderNewsPage = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedNews = allNews.slice(startIndex, endIndex);
+            displayNews(paginatedNews);
+            updatePaginationControls();
+        };
+
+        // Function to update pagination controls
+        const updatePaginationControls = () => {
+            const totalPages = Math.ceil(allNews.length / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+
+            // Select dla liczby artykułów na stronę
+            const itemsPerPageSelect = document.createElement('select');
+            itemsPerPageSelect.id = 'items-per-page';
+            [5, 10, 15, 20].forEach(num => {
+                const option = document.createElement('option');
+                option.value = num;
+                option.textContent = `${num} na stronę`;
+                if (num === itemsPerPage) option.selected = true;
+                itemsPerPageSelect.appendChild(option);
+            });
+            itemsPerPageSelect.addEventListener('change', (e) => {
+                itemsPerPage = parseInt(e.target.value);
+                currentPage = 1; // Resetuj na pierwszą stronę
+                renderNewsPage();
+            });
+            paginationContainer.appendChild(itemsPerPageSelect);
+
+            // Przyciski paginacji
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Poprzednia';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderNewsPage();
+                }
+            });
+            paginationContainer.appendChild(prevButton);
+
+            const pageInfo = document.createElement('span');
+            pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
+            paginationContainer.appendChild(pageInfo);
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Następna';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderNewsPage();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
         };
 
         // Fetch the latest news when the page loads
         fetchLatestNews();
     }
 
-// Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
-if (document.getElementById('vehicle-sim')) {
-    const canvas = document.getElementById('vehicle-sim');
-    const ctx = canvas.getContext('2d');
-    let x = 0;
-    const speed = 2;
+    // Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
+    if (document.getElementById('vehicle-sim')) {
+        const canvas = document.getElementById('vehicle-sim');
+        const ctx = canvas.getContext('2d');
+        let x = 0;
+        const speed = 2;
 
-    function drawVehicle() {
-        // Czyszczenie canvasu
-        ctx.fillStyle = '#f9f4e8'; // Tło zgodne z CSS
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function drawVehicle() {
+            // Czyszczenie canvasu
+            ctx.fillStyle = '#f9f4e8'; // Tło zgodne z CSS
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Rysowanie pojazdu
-        ctx.fillStyle = '#d4a017'; // Kolor żółty
-        ctx.fillRect(x, 150, 50, 30);
+            // Rysowanie pojazdu
+            ctx.fillStyle = '#d4a017'; // Kolor żółty
+            ctx.fillRect(x, 150, 50, 30);
 
-        // Aktualizacja pozycji
-        x += speed;
-        if (x > canvas.width) x = -50; // Reset po wyjściu za ekran
+            // Aktualizacja pozycji
+            x += speed;
+            if (x > canvas.width) x = -50; // Reset po wyjściu za ekran
 
-        // Zapętlona animacja
-        requestAnimationFrame(drawVehicle);
+            // Zapętlona animacja
+            requestAnimationFrame(drawVehicle);
+        }
+
+        // Start animacji
+        drawVehicle();
+
+        // Reset pozycji po kliknięciu
+        document.getElementById('reset-sim').addEventListener('click', () => {
+            x = 0;
+        });
     }
 
-    // Start animacji
-    drawVehicle();
+    // Generator pomysłów na gry
+    if (document.getElementById('generate-idea')) {
+        const gameIdeas = [
+            "Gra wyścigowa w kosmosie z grawitacją planet",
+            "RPG w świecie fantasy z dynamiczną pogodą",
+            "Symulator projektowania poziomów w grach",
+            "Platformówka z mechaniką zmiany czasu",
+            "Strzelanka z proceduralnie generowanymi broniami",
+            "Symulator przetrwania na opuszczonej stacji kosmicznej z zagadkami logicznymi",
+            "Gra strategiczna o budowie imperium w świecie steampunkowym",
+            "Przygodówka point-and-click w realiach cyberpunkowego miasta przyszłości",
+            "Symulator wyścigów dronów z personalizacją maszyn",
+            "Gra logiczna o manipulacji czasem w celu rozwiązania łamigłówek przestrzennych",
+            "RPG w świecie mitologii nordyckiej z dynamicznymi wyborami moralnymi",
+            "Symulator rolnictwa na obcej planecie z unikalnymi roślinami i stworzeniami",
+            "Gra akcji o walce z gigantycznymi maszynami w postapokaliptycznym świecie",
+            "Platformówka 2D z mechaniką zmiany grawitacji",
+            "Symulator hakera próbującego złamać zabezpieczenia globalnej korporacji",
+            "Gra muzyczna, w której rytm steruje akcjami bohatera w walce",
+            "Strategia czasu rzeczywistego o kolonizacji dna oceanu",
+            "Przygodowa gra eksploracyjna w świecie snów z surrealistycznymi krajobrazami",
+            "Symulator projektanta mody w świecie fantasy z magią tkanin",
+            "Gra survivalowa o przetrwaniu w dżungli pełnej prehistorycznych stworzeń",
+            "Taktyczna gra turowa o dowodzeniu oddziałem rebeliantów w dystopii",
+            "Symulator lotów balonem z misjami ratunkowymi w górach",
+            "Gra logiczna o budowie maszyn Rube Goldberga do rozwiązywania problemów",
+            "RPG w realiach średniowiecza z mechaniką handlu i dyplomacji",
+            "Strzelanka kooperacyjna w kosmosie z losowo generowanymi planetami",
+            "Gra edukacyjna o programowaniu robotów w fabryce przyszłości",
+            "Symulator życia smoka w świecie fantasy z ewolucją umiejętności",
+            "Platformówka z mechaniką malowania świata, które zmienia otoczenie",
+            "Gra detektywistyczna w wiktoriańskim Londynie z nadprzyrodzonymi elementami",
+            "Symulator wyścigów na hoverboardach w futurystycznym mieście",
+            "Strategia ekonomiczna o zarządzaniu miastem unoszącym się na chmurach",
+            "Gra akcji o ninja przemierzającym proceduralnie generowane poziomy",
+            "Symulator eksploracji jaskiń z zagadkami fizycznymi i skarbami",
+            "RPG w świecie, gdzie magia opiera się na matematyce i równaniach",
+            "Gra multiplayer o budowie i obronie zamków w realiach średniowiecza"
+        ];
 
-    // Reset pozycji po kliknięciu
-    document.getElementById('reset-sim').addEventListener('click', () => {
-        x = 0;
-    });
-}
+        const generateIdea = () => {
+            const idea = gameIdeas[Math.floor(Math.random() * gameIdeas.length)];
+            document.getElementById('game-idea').textContent = idea;
+        };
 
-// Generator pomysłów na gry
-if (document.getElementById('generate-idea')) {
-    const gameIdeas = [
-        "Gra wyścigowa w kosmosie z grawitacją planet",
-        "RPG w świecie fantasy z dynamiczną pogodą",
-        "Symulator projektowania poziomów w grach",
-        "Platformówka z mechaniką zmiany czasu",
-        "Strzelanka z proceduralnie generowanymi broniami",
-        "Symulator przetrwania na opuszczonej stacji kosmicznej z zagadkami logicznymi",
-        "Gra strategiczna o budowie imperium w świecie steampunkowym",
-        "Przygodówka point-and-click w realiach cyberpunkowego miasta przyszłości",
-        "Symulator wyścigów dronów z personalizacją maszyn",
-        "Gra logiczna o manipulacji czasem w celu rozwiązania łamigłówek przestrzennych",
-        "RPG w świecie mitologii nordyckiej z dynamicznymi wyborami moralnymi",
-        "Symulator rolnictwa na obcej planecie z unikalnymi roślinami i stworzeniami",
-        "Gra akcji o walce z gigantycznymi maszynami w postapokaliptycznym świecie",
-        "Platformówka 2D z mechaniką zmiany grawitacji",
-        "Symulator hakera próbującego złamać zabezpieczenia globalnej korporacji",
-        "Gra muzyczna, w której rytm steruje akcjami bohatera w walce",
-        "Strategia czasu rzeczywistego o kolonizacji dna oceanu",
-        "Przygodowa gra eksploracyjna w świecie snów z surrealistycznymi krajobrazami",
-        "Symulator projektanta mody w świecie fantasy z magią tkanin",
-        "Gra survivalowa o przetrwaniu w dżungli pełnej prehistorycznych stworzeń",
-        "Taktyczna gra turowa o dowodzeniu oddziałem rebeliantów w dystopii",
-        "Symulator lotów balonem z misjami ratunkowymi w górach",
-        "Gra logiczna o budowie maszyn Rube Goldberga do rozwiązywania problemów",
-        "RPG w realiach średniowiecza z mechaniką handlu i dyplomacji",
-        "Strzelanka kooperacyjna w kosmosie z losowo generowanymi planetami",
-        "Gra edukacyjna o programowaniu robotów w fabryce przyszłości",
-        "Symulator życia smoka w świecie fantasy z ewolucją umiejętności",
-        "Platformówka z mechaniką malowania świata, które zmienia otoczenie",
-        "Gra detektywistyczna w wiktoriańskim Londynie z nadprzyrodzonymi elementami",
-        "Symulator wyścigów na hoverboardach w futurystycznym mieście",
-        "Strategia ekonomiczna o zarządzaniu miastem unoszącym się na chmurach",
-        "Gra akcji o ninja przemierzającym proceduralnie generowane poziomy",
-        "Symulator eksploracji jaskiń z zagadkami fizycznymi i skarbami",
-        "RPG w świecie, gdzie magia opiera się na matematyce i równaniach",
-        "Gra multiplayer o budowie i obronie zamków w realiach średniowiecza"
-    ];
-
-    const generateIdea = () => {
-        const idea = gameIdeas[Math.floor(Math.random() * gameIdeas.length)];
-        document.getElementById('game-idea').textContent = idea;
-    };
-
-    document.getElementById('generate-idea').addEventListener('click', generateIdea);
-    generateIdea(); // Wygeneruj pierwszy pomysł od razu
-}
+        document.getElementById('generate-idea').addEventListener('click', generateIdea);
+        generateIdea(); // Wygeneruj pierwszy pomysł od razu
+    }
 
     // Logika dla strony projektów (projects.html)
     const fetchProjects = async () => {

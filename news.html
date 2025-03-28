@@ -11,10 +11,11 @@
         <div class="logo">
             <img src="KTG.png" alt="Logo C-BULLKA">
         </div>
-        <nav>
+        <button class="menu-toggle" aria-label="Otwórz menu">☰</button>
+        <nav class="nav-menu">
             <ul>
                 <li><a href="index.html">Strona Główna</a></li>
-                <li><a href="lab.html">Labolatorium</a></li>
+                <li><a href="lab.html">Laboratorium</a></li>
                 <li><a href="projects.html">Projekty</a></li>
                 <li><a href="ktg.html">KTG</a></li>
                 <li><a href="news.html">Nowości</a></li>
@@ -25,7 +26,10 @@
     <div class="container">
         <div class="note">
             <h2>Nowości ze świata gier</h2>
-            <div id="news-container"></div>
+            <div id="news-container">
+                <div id="loading-spinner" class="spinner hidden">Ładowanie...</div>
+            </div>
+            <div id="pagination"></div> <!-- Kontener dla paginacji -->
         </div>
     </div>
     <footer>
