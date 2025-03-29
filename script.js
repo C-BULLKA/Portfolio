@@ -46,6 +46,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+    
+        // Funkcja ustawiająca rozmiar canvasu
+        function resizeCanvas() {
+            const container = canvas.parentElement; // Pobierz kontener nadrzędny
+            canvas.width = container.clientWidth; // Ustaw szerokość na szerokość kontenera
+            canvas.height = Math.min(container.clientWidth * 0.5, 300); // Proporcjonalna wysokość, max 300px
+            initParticles(); // Zresetuj cząsteczki po zmianie rozmiaru
+        }
 
         // Klasa Particle z dodatkowymi właściwościami
         class Particle {
@@ -447,28 +455,30 @@ if (document.getElementById('news-container')) {
         const ctx = canvas.getContext('2d');
         let x = 0;
         const speed = 2;
-
+    
+        // Funkcja ustawiająca rozmiar canvasu
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = Math.min(container.clientWidth * 0.5, 200); // Proporcjonalna wysokość, max 200px
+        }
+    
         function drawVehicle() {
-            // Czyszczenie canvasu
-            ctx.fillStyle = '#f9f4e8'; // Tło zgodne z CSS
+            ctx.fillStyle = '#f9f4e8';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Rysowanie pojazdu
-            ctx.fillStyle = '#d4a017'; // Kolor żółty
-            ctx.fillRect(x, 150, 50, 30);
-
-            // Aktualizacja pozycji
+            ctx.fillStyle = '#d4a017';
+            ctx.fillRect(x, canvas.height / 2 - 15, 50, 30); // Centrowanie pojazdu
             x += speed;
-            if (x > canvas.width) x = -50; // Reset po wyjściu za ekran
-
-            // Zapętlona animacja
+            if (x > canvas.width) x = -50;
             requestAnimationFrame(drawVehicle);
         }
-
-        // Start animacji
+    
+        // Ustawienie początkowego rozmiaru i nasłuchiwanie zmian
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
         drawVehicle();
-
-        // Reset pozycji po kliknięciu
+    
+        // Reset pozycji
         document.getElementById('reset-sim').addEventListener('click', () => {
             x = 0;
         });
