@@ -12,9 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let allPosts = [];
     let currentEditingPostId = null;
-    let allNews = []; // Przechowuje wszystkie pobrane newsy
-    let currentPage = 1; // Aktualna strona
-    let itemsPerPage = 5; // Domyślna liczba artykułów na stronę
+    let allNews = [];
+    let currentPage = 1;
+    let itemsPerPage = 5;
 
     const notes = document.querySelectorAll(".note");
 
@@ -46,56 +46,52 @@ document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-    
-        // Funkcja ustawiająca rozmiar canvasu
+        let simulationSpeed = 1;
+
         function resizeCanvas() {
-            const container = canvas.parentElement; // Pobierz kontener nadrzędny
-            canvas.width = container.clientWidth; // Ustaw szerokość na szerokość kontenera
-            canvas.height = Math.min(container.clientWidth * 0.5, 300); // Proporcjonalna wysokość, max 300px
-            initParticles(); // Zresetuj cząsteczki po zmianie rozmiaru
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = Math.min(container.clientWidth * 0.5, 300);
+            initParticles();
         }
 
-        // Klasa Particle z dodatkowymi właściwościami
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = Math.random() * 2 - 1; // Prędkość od -1 do 1
+                this.vx = Math.random() * 2 - 1;
                 this.vy = Math.random() * 2 - 1;
-                this.color = '#d4a017'; // Początkowy kolor (żółty)
-                this.radius = 5; // Początkowy rozmiar
-                this.cornerHits = 0; // Licznik uderzeń w róg
+                this.color = '#d4a017';
+                this.radius = 5;
+                this.cornerHits = 0;
             }
 
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
+                this.x += this.vx * simulationSpeed;
+                this.y += this.vy * simulationSpeed;
 
-                // Sprawdzanie uderzeń w ściany i zmiana koloru
                 if (this.x < this.radius || this.x > canvas.width - this.radius) {
                     this.vx *= -1;
-                    this.changeColor(); // Zmiana koloru przy uderzeniu w pionową ścianę
+                    this.changeColor();
                 }
                 if (this.y < this.radius || this.y > canvas.height - this.radius) {
                     this.vy *= -1;
-                    this.changeColor(); // Zmiana koloru przy uderzeniu w poziomą ścianę
+                    this.changeColor();
                 }
 
-                // Sprawdzanie uderzeń w rogi i zmniejszanie
                 if (
-                    (this.x <= this.radius && this.y <= this.radius) || // Lewy górny róg
-                    (this.x >= canvas.width - this.radius && this.y <= this.radius) || // Prawy górny róg
-                    (this.x <= this.radius && this.y >= canvas.height - this.radius) || // Lewy dolny róg
-                    (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius) // Prawy dolny róg
+                    (this.x <= this.radius && this.y <= this.radius) ||
+                    (this.x >= canvas.width - this.radius && this.y <= this.radius) ||
+                    (this.x <= this.radius && this.y >= canvas.height - this.radius) ||
+                    (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius)
                 ) {
                     this.cornerHits++;
                     if (this.cornerHits < 3) {
-                        this.radius = Math.max(1, this.radius - 1); // Zmniejsz o 1, ale nie poniżej 1
+                        this.radius = Math.max(1, this.radius - 1);
                     }
                 }
             }
 
-            // Funkcja zmiany koloru
             changeColor() {
                 const r = Math.floor(Math.random() * 256);
                 const g = Math.floor(Math.random() * 256);
@@ -110,13 +106,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.fill();
             }
 
-            // Sprawdzanie, czy cząsteczka powinna zniknąć
             shouldRemove() {
                 return this.cornerHits >= 3;
             }
+
+            applyShockwave(centerX, centerY) {
+                const dx = this.x - centerX;
+                const dy = this.y - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+                const force = (1 - distance / maxDistance) * 5;
+
+                if (distance > 0) {
+                    this.vx += (dx / distance) * force;
+                    this.vy += (dy / distance) * force;
+                }
+            }
         }
 
-        // Inicjalizacja cząsteczek
         function initParticles() {
             particles = [];
             for (let i = 0; i < 50; i++) {
@@ -124,39 +131,40 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // Funkcja animacji
         function animateParticles() {
-            // Czyszczenie canvasu
-            ctx.fillStyle = '#f5f0dc'; // Kremowe tło (RGB: 245, 240, 220)
+            ctx.fillStyle = '#f5f0dc';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Aktualizacja i rysowanie cząsteczek
             for (let i = particles.length - 1; i >= 0; i--) {
                 const particle = particles[i];
                 particle.update();
                 particle.show();
 
-                // Usuwanie cząsteczki po 3 uderzeniach w róg
                 if (particle.shouldRemove()) {
                     particles.splice(i, 1);
                 }
             }
 
-            // Zapętlona animacja
             requestAnimationFrame(animateParticles);
         }
 
-        // Start
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
         initParticles();
         animateParticles();
 
-        // Reset cząsteczek
         document.getElementById('reset-particles').addEventListener('click', () => {
             initParticles();
         });
+
+        document.getElementById('shockwave-button')?.addEventListener('click', () => {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            particles.forEach(particle => particle.applyShockwave(centerX, centerY));
+        });
     }
 
-    // Logika dla strony blogowej (blog.html)
+    // Logika dla strony blogowej (blog.html) - bez zmian
     if (document.getElementById('blog-posts-container')) {
         const fetchBlogPosts = async () => {
             try {
@@ -321,170 +329,172 @@ document.addEventListener("DOMContentLoaded", function () {
         window.addEventListener('resize', renderBlogPosts);
     }
 
-// Logika dla strony nowości (news.html)
-if (document.getElementById('news-container')) {
-    const newsContainer = document.getElementById('news-container');
-    const loadingSpinner = document.getElementById('loading-spinner'); // Pobierz spinner
-    console.log('newsContainer:', newsContainer); // Debug log
+    // Logika dla strony nowości (news.html) - bez zmian
+    if (document.getElementById('news-container')) {
+        const newsContainer = document.getElementById('news-container');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        console.log('newsContainer:', newsContainer);
 
-    let allNews = []; // Przechowuje wszystkie pobrane newsy
-    let currentPage = 1; // Aktualna strona
-    let itemsPerPage = 5; // Domyślna liczba artykułów na stronę
+        let allNews = [];
+        let currentPage = 1;
+        let itemsPerPage = 5;
 
-    // Funkcja do pobierania najnowszych wiadomości MMO
-    const fetchLatestNews = async () => {
-        try {
-            // Pokaż spinner przed rozpoczęciem ładowania
-            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+        const fetchLatestNews = async () => {
+            try {
+                if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+                const url = 'https://corsproxy.io/?' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews');
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
 
-            const url = 'https://corsproxy.io/?' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews');
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Fetched data:', data);
+                allNews = data;
+                console.log('Parsed news data:', allNews);
+                renderNewsPage();
+            } catch (error) {
+                console.error('Error fetching latest news:', error);
+                newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach: ${error.message}. Spróbuj ponownie później.</p>`;
+            } finally {
+                if (loadingSpinner) loadingSpinner.classList.add('hidden');
+            }
+        };
+
+        const displayNews = (data) => {
+            newsContainer.innerHTML = '';
+            if (!data || data.length === 0) {
+                newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
+                return;
+            }
+            data.forEach(news => {
+                console.log('News item:', news);
+                const newsItem = `
+                    <div class="news-item note">
+                        <h3>${news.title}</h3>
+                        <p>${news.short_description}</p>
+                        <a href="${news.article_url}" target="_blank">Read more</a>
+                    </div>
+                `;
+                newsContainer.innerHTML += newsItem;
+            });
+            checkVisibility();
+        };
+
+        const renderNewsPage = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedNews = allNews.slice(startIndex, endIndex);
+            displayNews(paginatedNews);
+            updatePaginationControls();
+        };
+
+        const updatePaginationControls = () => {
+            const totalPages = Math.ceil(allNews.length / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+
+            const itemsPerPageSelect = document.createElement('select');
+            itemsPerPageSelect.id = 'items-per-page';
+            [5, 10, 15, 20].forEach(num => {
+                const option = document.createElement('option');
+                option.value = num;
+                option.textContent = `${num} na stronę`;
+                if (num === itemsPerPage) option.selected = true;
+                itemsPerPageSelect.appendChild(option);
+            });
+            itemsPerPageSelect.addEventListener('change', (e) => {
+                itemsPerPage = parseInt(e.target.value);
+                currentPage = 1;
+                renderNewsPage();
+            });
+            paginationContainer.appendChild(itemsPerPageSelect);
+
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Poprzednia';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderNewsPage();
                 }
             });
+            paginationContainer.appendChild(prevButton);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            const pageInfo = document.createElement('span');
+            pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
+            paginationContainer.appendChild(pageInfo);
 
-            const data = await response.json();
-            console.log('Fetched data:', data); // Debug log
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Następna';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderNewsPage();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
+        };
 
-            allNews = data; // corsproxy.io zwraca dane bezpośrednio w formacie JSON
-            console.log('Parsed news data:', allNews); // Debug log
-            renderNewsPage(); // Wyświetl pierwszą stronę
-        } catch (error) {
-            console.error('Error fetching latest news:', error);
-            newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach: ${error.message}. Spróbuj ponownie później.</p>`;
-        } finally {
-            // Ukryj spinner po zakończeniu żądania (sukces lub błąd)
-            if (loadingSpinner) loadingSpinner.classList.add('hidden');
-        }
-    };
-
-    // Funkcja wyświetlająca newsy dla bieżącej strony
-    const displayNews = (data) => {
-        newsContainer.innerHTML = ''; // Wyczyść kontener
-        if (!data || data.length === 0) {
-            newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
-            return;
-        }
-        data.forEach(news => {
-            console.log('News item:', news); // Debug log
-            const newsItem = `
-                <div class="news-item note">
-                    <h3>${news.title}</h3>
-                    <p>${news.short_description}</p>
-                    <a href="${news.article_url}" target="_blank">Read more</a>
-                </div>
-            `;
-            newsContainer.innerHTML += newsItem;
-        });
-        checkVisibility(); // Wywołaj animację widoczności
-    };
-
-    // Funkcja renderująca bieżącą stronę
-    const renderNewsPage = () => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedNews = allNews.slice(startIndex, endIndex);
-        displayNews(paginatedNews);
-        updatePaginationControls();
-    };
-
-    // Funkcja aktualizująca kontrolki paginacji
-    const updatePaginationControls = () => {
-        const totalPages = Math.ceil(allNews.length / itemsPerPage);
-        const paginationContainer = document.getElementById('pagination');
-        paginationContainer.innerHTML = '';
-
-        // Select dla liczby artykułów na stronę
-        const itemsPerPageSelect = document.createElement('select');
-        itemsPerPageSelect.id = 'items-per-page';
-        [5, 10, 15, 20].forEach(num => {
-            const option = document.createElement('option');
-            option.value = num;
-            option.textContent = `${num} na stronę`;
-            if (num === itemsPerPage) option.selected = true;
-            itemsPerPageSelect.appendChild(option);
-        });
-        itemsPerPageSelect.addEventListener('change', (e) => {
-            itemsPerPage = parseInt(e.target.value);
-            currentPage = 1; // Resetuj na pierwszą stronę
-            renderNewsPage();
-        });
-        paginationContainer.appendChild(itemsPerPageSelect);
-
-        // Przyciski paginacji
-        const prevButton = document.createElement('button');
-        prevButton.textContent = 'Poprzednia';
-        prevButton.disabled = currentPage === 1;
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderNewsPage();
-            }
-        });
-        paginationContainer.appendChild(prevButton);
-
-        const pageInfo = document.createElement('span');
-        pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
-        paginationContainer.appendChild(pageInfo);
-
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Następna';
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderNewsPage();
-            }
-        });
-        paginationContainer.appendChild(nextButton);
-    };
-
-    // Pobierz najnowsze wiadomości po załadowaniu strony
-    fetchLatestNews();
-}
+        fetchLatestNews();
+    }
 
     // Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
     if (document.getElementById('vehicle-sim')) {
         const canvas = document.getElementById('vehicle-sim');
         const ctx = canvas.getContext('2d');
         let x = 0;
-        const speed = 2;
-    
+        const baseSpeed = 2; // Bazowa prędkość (stała)
+        let simulationSpeed = 1; // Mnożnik prędkości symulacji
+
         // Funkcja ustawiająca rozmiar canvasu
         function resizeCanvas() {
             const container = canvas.parentElement;
             canvas.width = container.clientWidth;
-            canvas.height = Math.min(container.clientWidth * 0.5, 200); // Proporcjonalna wysokość, max 200px
+            canvas.height = Math.min(container.clientWidth * 0.5, 200);
         }
-    
+
         function drawVehicle() {
             ctx.fillStyle = '#f9f4e8';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#d4a017';
-            ctx.fillRect(x, canvas.height / 2 - 15, 50, 30); // Centrowanie pojazdu
-            x += speed;
+            ctx.fillRect(x, canvas.height / 2 - 15, 50, 30);
+            x += baseSpeed * simulationSpeed;
             if (x > canvas.width) x = -50;
             requestAnimationFrame(drawVehicle);
         }
-    
+
         // Ustawienie początkowego rozmiaru i nasłuchiwanie zmian
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         drawVehicle();
-    
-        // Reset pozycji
+
+        // Reset pozycji i prędkości
         document.getElementById('reset-sim').addEventListener('click', () => {
-            x = 0;
+            x = 0; // Reset pozycji do początkowej
+            simulationSpeed = 1; // Reset mnożnika prędkości do domyślnej wartości
+            console.log('Reset: Position =', x, 'Speed =', simulationSpeed); // Debug
+        });
+
+        // Przyspieszenie symulacji
+        document.getElementById('speed-up')?.addEventListener('click', () => {
+            simulationSpeed = Math.min(simulationSpeed + 0.5, 3); // Max 3x
+            console.log('Simulation Speed Increased:', simulationSpeed); // Debug
+        });
+
+        // Zwolnienie symulacji
+        document.getElementById('slow-down')?.addEventListener('click', () => {
+            simulationSpeed = Math.max(simulationSpeed - 0.5, 0.1); // Min 0.1x
+            console.log('Simulation Speed Decreased:', simulationSpeed); // Debug
         });
     }
 
-    // Generator pomysłów na gry
+    // Generator pomysłów na gry - bez zmian
     if (document.getElementById('generate-idea')) {
         const gameIdeas = [
             "Gra wyścigowa w kosmosie z grawitacją planet",
@@ -530,17 +540,17 @@ if (document.getElementById('news-container')) {
         };
 
         document.getElementById('generate-idea').addEventListener('click', generateIdea);
-        generateIdea(); // Wygeneruj pierwszy pomysł od razu
+        generateIdea();
     }
 
-    // Logika dla strony projektów (projects.html)
+    // Logika dla strony projektów (projects.html) - bez zmian
     const fetchProjects = async () => {
         try {
             const response = await fetch('https://api.github.com/users/C-BULLKA/repos');
             const repos = await response.json();
             const gallery = document.getElementById('project-gallery');
-            gallery.innerHTML = ''; // Czyścimy galerię przed dodaniem nowych elementów
-            repos.slice(0, 3).forEach(repo => { // Ograniczamy do 3 projektów
+            gallery.innerHTML = '';
+            repos.slice(0, 3).forEach(repo => {
                 const card = document.createElement('div');
                 card.classList.add('project-card');
                 card.innerHTML = `
