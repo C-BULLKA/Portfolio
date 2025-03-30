@@ -14,7 +14,7 @@ body {
 /* Header */
 header {
     background: linear-gradient(135deg, #d4a017 0%, #e6b800 100%);
-    padding: 20px 10px 5px; /* Zachowujemy oryginalne padding */
+    padding: 20px 10px 5px;
     text-align: center;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     position: sticky;
@@ -22,7 +22,7 @@ header {
     z-index: 1000;
     border-bottom: 3px solid #8b5e34;
     transition: transform 0.3s ease;
-    position: relative; /* Potrzebne dla pozycjonowania absolutnego logo */
+    position: relative;
 }
 
 header:hover {
@@ -39,14 +39,13 @@ header h1 {
 
 /* Logo */
 .logo {
-    position: absolute; /* Pozycjonowanie absolutne, aby nie wpływać na wysokość header */
-    left: 40px; /* Odstęp od lewej krawędzi */
-    bottom: 0px;
+    position: absolute;
+    left: 40px;
     top: 1px;
 }
 
 .logo img {
-    max-height: 80px; /* Dopasowana wysokość do menu */
+    max-height: 80px;
     width: auto;
 }
 
@@ -55,27 +54,25 @@ nav ul {
     list-style: none;
     padding: 0;
     display: flex;
-    justify-content: center; /* Menu wyśrodkowane */
+    justify-content: center;
     flex-wrap: wrap;
     margin: 0;
 }
 
-/* Styl dla przycisku hamburgera */
 .menu-toggle {
-    display: none; /* Ukryty na dużych ekranach */
+    display: none;
     background: none;
     border: none;
     font-size: 24px;
-    color: #000000; /* Czarny kolor */
+    color: #000;
     cursor: pointer;
     padding: 10px;
     position: absolute;
-    right: 20px; /* Po prawej stronie */
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
 }
 
-/* Styl dla linków - efekt zakładek notatnika */
 nav ul li {
     margin: 0 10px;
     position: relative;
@@ -99,13 +96,11 @@ nav ul li a {
     border-bottom: none;
 }
 
-/* Efekt po najechaniu */
 nav ul li a:hover {
     top: -5px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Jednolite kolory dla zakładek */
 nav ul li:nth-child(1) a { background: #ff9999; }
 nav ul li:nth-child(2) a { background: #87CEEB; }
 nav ul li:nth-child(3) a { background: #98FF98; }
@@ -115,29 +110,30 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
 
 /* Kontener główny */
 .container {
-    max-width: 1400px; /* Zwiększona szerokość dla większych ekranów */
+    max-width: 1400px;
     margin: 30px auto;
     padding: 0 20px;
-    display: flex; /* Dodano Flexbox dla lepszego układu */
-    flex-direction: column; /* Układ pionowy */
-    align-items: center; /* Centrowanie dzieci */
-    width: 100%; /* Zapewnia dopasowanie do ekranu */
-    box-sizing: border-box; /* Uwzględnia padding w szerokości */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Style dla karteczek */
 .note {
     background: #fffef0;
     padding: 35px;
-    margin: 20px 0; /* Zmniejszono margines dla spójności z Flexbox */
+    margin: 20px 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
     border-left: 4px dashed #d4a017;
     border-radius: 0 15px 15px 0;
-    width: 100%; /* Pełna szerokość w kontenerze zamiast 85% */
-    max-width: 900px; /* Ograniczenie maksymalnej szerokości */
-    box-sizing: border-box; /* Uwzględnia padding i border */
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
     transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
 }
 
 .note:hover {
@@ -145,25 +141,13 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
-.note:nth-child(odd) {
-    transform: none; /* Usunięto translateX */
-    margin-left: auto; /* Centrowanie */
-    margin-right: auto; /* Centrowanie */
-}
-
-.note:nth-child(even) {
-    transform: none; /* Usunięto translateX */
-    margin-left: auto; /* Centrowanie */
-    margin-right: auto; /* Centrowanie */
-}
-
 .note.visible {
-    transform: translateY(0); /* Zmiana na animację w pionie */
+    transform: translateY(0);
     opacity: 1;
 }
 
-.note:not(.visible) { /* Dodano dla początkowego stanu */
-    transform: translateY(20px); /* Przesunięcie w dół przed pojawieniem */
+.note:not(.visible) {
+    transform: translateY(20px);
     opacity: 0;
 }
 
@@ -185,6 +169,7 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    width: 100%;
 }
 
 .blog-posts .note {
@@ -238,8 +223,9 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
     transform: translateY(-3px);
 }
 
-/* Formularz dodawania wpisu */
-#add-post-form {
+/* Formularze */
+#add-post-form,
+.contact-form {
     background: #fffef0;
     padding: 25px;
     margin: 20px 0;
@@ -249,24 +235,7 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
 }
 
 #add-post-form input,
-#add-post-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 12px 0;
-    border: 1px dashed #d4a017;
-    border-radius: 6px;
-    background: #fef9e7;
-    font-family: 'Patrick Hand', 'Courier New', monospace;
-    transition: border-color 0.3s ease;
-}
-
-#add-post-form input:focus,
-#add-post-form textarea:focus {
-    border-color: #e6b800;
-    outline: none;
-}
-
-/* Formularz kontaktowy */
+#add-post-form textarea,
 .contact-form input,
 .contact-form textarea {
     width: 100%;
@@ -279,6 +248,8 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
     transition: border-color 0.3s ease;
 }
 
+#add-post-form input:focus,
+#add-post-form textarea:focus,
 .contact-form input:focus,
 .contact-form textarea:focus {
     border-color: #e6b800;
@@ -331,7 +302,6 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Specyficzne style dla przycisków w blogu */
 #blog-posts-container table td button.edit:hover { background: #87CEEB; }
 #blog-posts-container table td button.delete:hover { background: #FF9999; }
 button#add-post-btn:hover { background: #98FF98; }
@@ -386,32 +356,22 @@ footer p {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Style dla galerii projektów */
+/* Galeria projektów */
 .project-gallery {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     width: 100%;
-    box-sizing: border-box;
-    max-width: 1400px; /* Dopasowanie do szerokości .container */
-    margin: 0 auto; /* Centrowanie galerii */
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Reset stylów .note dla .project-gallery */
 .note:has(.project-gallery) {
     width: 100%;
-    max-width: 1400px; /* Zwiększono, aby pomieścić 3 kolumny */
+    max-width: 1400px;
     transform: none !important;
-    margin: 20px 0; /* Spójność z innymi .note */
+    margin: 20px 0;
     padding: 35px;
-}
-
-/* Usunięcie przesunięć dla .note zawierającego .project-gallery */
-.note:has(.project-gallery):nth-child(odd),
-.note:has(.project-gallery):nth-child(even) {
-    transform: none;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .project-card {
@@ -422,143 +382,17 @@ footer p {
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     box-sizing: border-box;
-    flex: 0 0 calc(33.33% - 20px); /* 3 kolumny na największych ekranach, bez rozciągania */
-    min-width: 300px; /* Minimalna szerokość dla czytelności */
-    max-width: calc(33.33% - 20px); /* Maksymalna szerokość dla 3 kolumn */
+    flex: 0 0 calc(33.33% - 20px);
+    min-width: 300px;
+    max-width: calc(33.33% - 20px);
 }
 
-/* Responsywność dla galerii projektów */
-@media (max-width: 1199px) and (min-width: 769px) {
-    .project-card {
-        flex: 0 0 calc(50% - 20px); /* 2 kolumny */
-        max-width: calc(50% - 20px);
-    }
-}
-
-@media (max-width: 768px) {
-    .project-card {
-        flex: 0 0 100%; /* 1 kolumna */
-        max-width: 100%;
-    }
-}
-
-/* Ogólna responsywność */
-@media (max-width: 1366px) {
-    .blog-posts .note {
-        flex: 1 1 100%;
-    }
-
-    #blog-posts-container table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .note {
-        padding: 20px; /* Mniejszy padding na małych ekranach */
-        max-width: 100%; /* Pełna szerokość na mobile */
-    }
-
-    .logo {
-        position: static; /* Logo wraca do normalnego przepływu */
-        text-align: center; /* Wyśrodkowanie logo */
-        margin: 0 auto 10px; /* Odstęp od menu */
-    }
-
-    .logo img {
-        max-height: 60px; /* Dopasowana wielkość logo */
-    }
-
-    nav ul li {
-        margin: 0;
-    }
-
-    nav ul li a {
-        padding: 10px 16px;
-        font-size: 1.2em;
-        width: 100%; /* Stała szerokość dla wszystkich zakładek */
-        box-sizing: border-box;
-        border-radius: 12px 12px 0 0; /* Zaokrąglenie tylko na górze */
-    }
-
-    nav ul li a:hover {
-        top: -5px;
-    }
-
-    header h1 {
-        font-size: 2em;
-    }
-
-    footer {
-        padding: 10px;
-        font-size: 0.9em;
-    }
-
-    /* Styl dla menu hamburger na ekranach poniżej 1366px */
-    .menu-toggle {
-        display: block; /* Pokaż przycisk */
-    }
-
-    .nav-menu {
-        display: none; /* Ukryj menu domyślnie */
-        position: absolute;
-        top: calc(100% - 12px); /* Wyrównanie z górnym zaokrągleniem przycisku */
-        right: 20px; /* Wyrównane do prawej krawędzi hamburgera */
-        width: 200px; /* Stała szerokość, nieco większa niż przyciski */
-        background-color: #f9f4e8; /* Tło menu */
-        border: 1px solid #8b5e34;
-        border-top: none; /* Usunięcie górnej krawędzi dla płynnego przejścia */
-        border-radius: 0; /* Brak zaokrągleń */
-        padding: 0; /* Brak paddingu, aby przyciski były równo z krawędziami */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .nav-menu.active {
-        display: block; /* Pokaż menu po kliknięciu */
-    }
-
-    .nav-menu ul {
-        flex-direction: column; /* Ustaw elementy w pionie */
-        padding: 0;
-        margin: 0;
-    }
-
-    .nav-menu li {
-        margin: 0;
-        width: 100%; /* Pełna szerokość w kontenerze menu */
-    }
-}
-
-@media (min-width: 1367px) {
-    #blog-posts-container table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .nav-menu {
-        display: block; /* Pokaż menu na dużych ekranach */
-    }
-
-    .menu-toggle {
-        display: none; /* Ukryj przycisk hamburgera */
-    }
-}
-
-/* Style dla eksperymentów */
-.experiment {
-    margin: 20px 0;
-    text-align: center;
-}
-
-canvas {
-    border: 1px dashed #d4a017;
-    border-radius: 10px;
-}
-
-/* Style dla Kącika Twórcy Gier */
+/* Eksperymenty i Kącik Twórcy Gier */
+.experiment,
 .gamedev-section {
     margin: 20px 0;
     text-align: center;
+    width: 100%;
 }
 
 .gamedev-section pre {
@@ -570,20 +404,26 @@ canvas {
     overflow-x: auto;
 }
 
-.gamedev-section canvas {
+canvas {
     border: 1px dashed #d4a017;
     border-radius: 10px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    box-sizing: border-box;
     background: #f9f4e8;
 }
 
+/* Spinner */
 .spinner {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.2em;
-    color: #d4a017; /* Kolor zgodny z motywem strony */
+    color: #d4a017;
     flex-direction: column;
-    height: 100px; /* Dopasuj do potrzeb */
+    height: 100px;
 }
 
 .spinner::before {
@@ -602,7 +442,6 @@ canvas {
     100% { transform: rotate(360deg); }
 }
 
-/* Ukryj spinner, gdy nie jest potrzebny */
 .hidden {
     display: none;
 }
@@ -612,24 +451,24 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Pozwala elementom zawijać się na mniejszych ekranach */
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: 20px;
-    padding: 10px; /* Dodatkowy padding dla lepszej czytelności */
-    max-width: 100%; /* Zapobiega wychodzeniu poza kontener */
+    padding: 10px;
+    max-width: 100%;
     box-sizing: border-box;
 }
 
-#pagination select, 
+#pagination select,
 #pagination button {
-    padding: 8px 12px; /* Lepsze proporcje na mniejszych ekranach */
+    padding: 8px 12px;
     font-size: 1em;
     background-color: #f9f4e8;
     border: 1px solid #d4a017;
     color: #d4a017;
     cursor: pointer;
-    border-radius: 6px; /* Spójne zaokrąglenie */
-    min-width: 60px; /* Minimalna szerokość dla czytelności */
+    border-radius: 6px;
+    min-width: 60px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -638,42 +477,66 @@ canvas {
     cursor: not-allowed;
 }
 
-/* Efekt hover dla przycisków */
 #pagination button:hover:not(:disabled) {
-    background-color: #d4a017; /* Tło zmienia się na żółte */
-    color: white; /* Tekst zmienia się na biały */
+    background-color: #d4a017;
+    color: #fff;
 }
 
 #pagination span {
     font-size: 1em;
     color: #d4a017;
-    padding: 0 5px; /* Lekki odstęp dla czytelności */
+    padding: 0 5px;
 }
 
-/* Responsywność paginacji */
+/* Responsywność */
+@media (max-width: 1366px) {
+    header h1 { font-size: 2em; }
+    .logo { position: static; text-align: center; margin: 0 auto 10px; }
+    .logo img { max-height: 60px; }
+    .menu-toggle { display: block; }
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% - 12px);
+        right: 20px;
+        width: 200px;
+        background-color: #f9f4e8;
+        border: 1px solid #8b5e34;
+        border-top: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .nav-menu.active { display: block; }
+    .nav-menu ul { flex-direction: column; padding: 0; margin: 0; }
+    .nav-menu li { margin: 0; width: 100%; }
+    nav ul li a { padding: 10px 16px; width: 100%; box-sizing: border-box; }
+    nav ul li a:hover { top: -5px; }
+    .blog-posts .note { flex: 1 1 100%; }
+    #blog-posts-container table { display: block; overflow-x: auto; white-space: nowrap; }
+    .note { padding: 20px; max-width: 100%; }
+    footer { padding: 10px; font-size: 0.9em; }
+}
+
+@media (min-width: 1367px) {
+    .nav-menu { display: block; }
+    .menu-toggle { display: none; }
+}
+
+@media (max-width: 1199px) and (min-width: 769px) {
+    .project-card { flex: 0 0 calc(50% - 20px); max-width: calc(50% - 20px); }
+}
+
 @media (max-width: 768px) {
-    #pagination {
-        flex-direction: column; /* Ustawienie w pionie na mniejszych ekranach */
-        gap: 8px; /* Mniejszy odstęp między elementami */
-    }
-
-    #pagination select, 
-    #pagination button {
-        width: 100%; /* Pełna szerokość na małych ekranach */
-        max-width: 200px; /* Ograniczenie maksymalnej szerokości */
-        margin: 0 auto; /* Centrowanie */
-    }
-
-    #pagination span {
-        text-align: center; /* Wyśrodkowanie tekstu */
-    }
+    .project-card { flex: 0 0 100%; max-width: 100%; }
+    .note { padding: 20px; max-width: 100%; }
+    canvas { width: 100%; }
+    .gamedev-section, .experiment { padding: 0; }
+    #pagination { flex-direction: column; gap: 8px; }
+    #pagination select, #pagination button { width: 100%; max-width: 200px; margin: 0 auto; }
+    #pagination span { text-align: center; }
 }
 
 @media (max-width: 480px) {
-    #pagination select, 
-    #pagination button {
-        padding: 6px 10px; /* Mniejszy padding na bardzo małych ekranach */
-        font-size: 0.9em; /* Mniejsza czcionka */
-        min-width: 50px; /* Mniejsza minimalna szerokość */
-    }
+    #pagination select, #pagination button { padding: 6px 10px; font-size: 0.9em; min-width: 50px; }
 }
