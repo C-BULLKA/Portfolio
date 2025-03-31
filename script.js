@@ -334,27 +334,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const newsContainer = document.getElementById('news-container');
         const loadingSpinner = document.getElementById('loading-spinner');
         console.log('newsContainer:', newsContainer);
-
+    
         let allNews = [];
         let currentPage = 1;
         let itemsPerPage = 5;
-
+    
         const fetchLatestNews = async () => {
             try {
                 if (loadingSpinner) loadingSpinner.classList.remove('hidden');
-                const url = 'https://corsproxy.io/?' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews');
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
-
+                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews'));
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
                 const data = await response.json();
                 console.log('Fetched data:', data);
-                allNews = data;
+                allNews = JSON.parse(data.contents);
                 console.log('Parsed news data:', allNews);
                 renderNewsPage();
             } catch (error) {
@@ -364,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (loadingSpinner) loadingSpinner.classList.add('hidden');
             }
         };
-
+    
         const displayNews = (data) => {
             newsContainer.innerHTML = '';
             if (!data || data.length === 0) {
@@ -384,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             checkVisibility();
         };
-
+    
         const renderNewsPage = () => {
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
@@ -392,12 +386,12 @@ document.addEventListener("DOMContentLoaded", function () {
             displayNews(paginatedNews);
             updatePaginationControls();
         };
-
+    
         const updatePaginationControls = () => {
             const totalPages = Math.ceil(allNews.length / itemsPerPage);
             const paginationContainer = document.getElementById('pagination');
             paginationContainer.innerHTML = '';
-
+    
             const itemsPerPageSelect = document.createElement('select');
             itemsPerPageSelect.id = 'items-per-page';
             [5, 10, 15, 20].forEach(num => {
@@ -413,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 renderNewsPage();
             });
             paginationContainer.appendChild(itemsPerPageSelect);
-
+    
             const prevButton = document.createElement('button');
             prevButton.textContent = 'Poprzednia';
             prevButton.disabled = currentPage === 1;
@@ -424,11 +418,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
             paginationContainer.appendChild(prevButton);
-
+    
             const pageInfo = document.createElement('span');
             pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
             paginationContainer.appendChild(pageInfo);
-
+    
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Następna';
             nextButton.disabled = currentPage === totalPages;
@@ -440,7 +434,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             paginationContainer.appendChild(nextButton);
         };
-
+    
         fetchLatestNews();
     }
 
