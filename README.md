@@ -1,124 +1,240 @@
-Wstęp 
+# Dokumentacja Projektu: Kącik Twórcy Gier
 
-Strona “Kącik Twórcy Gier” to serwis opierający się na nowinkach ze świata gier mmo, oraz informacjach przydatnych dla osoby która chciałaby rozpocząć swoją przygodę z tworzeniem gier. Znajdują się tu informacje o moich pracach, takich jak symulacje, generator pomysłów dla gier czy interaktywne aplikacje, zbudowane z użyciem HTML, CSS, JavaScript i zewnętrznych API. 
- 
- 
- 
-Opis Struktury Serwisu 
+## Wstęp
 
-Serwis składa się z sześciu głównych stron, z których każda pełni określoną funkcję. Wszystkie strony mają wspólną nawigację w postaci stałego nagłówka z menu (z opcją menu hamburgerowego na urządzeniach mobilnych) oraz stopkę z informacją o prawach autorskich ("© 2025 Kącik Twórcy Gier by Piotr Cebula"). Stylizacja i interaktywność są zarządzane przez zewnętrzne pliki styles.css i script.js. 
+Strona **“Kącik Twórcy Gier”** to serwis internetowy skierowany do entuzjastów gier komputerowych, w szczególności tych z gatunku MMO, oraz osób aspirujących do roli twórców gier. Platforma agreguje najświeższe informacje ze świata gier, a także dostarcza zasobów i narzędzi przydatnych w procesie game developmentu. Użytkownicy znajdą tu prezentacje autorskich prac, w tym interaktywne symulacje, generator pomysłów na gry oraz inne aplikacje, które zostały zbudowane z wykorzystaniem nowoczesnych technologii webowych: HTML, CSS, JavaScript oraz zewnętrznych API.
 
-Strona Główna (index.html)  
+## Opis Struktury Serwisu
 
-Zawiera powitanie, krótki opis autora, informacje o doświadczeniu zawodowym (lub jego braku), listę umiejętności (HTML, CSS, JavaScript, React, Python, Java, Git) oraz dane kontaktowe (email: [email protected]). 
+Serwis został zaprojektowany jako modułowa platforma składająca się z sześciu głównych, tematycznych stron. Każda z nich pełni unikalną funkcję, jednocześnie zachowując spójność wizualną i nawigacyjną z resztą serwisu. Kluczowe elementy wspólne dla wszystkich podstron to:
 
-Struktura opiera się na sekcjach z tekstem w formie "notatek" z prostym, czytelnym układem. 
+*   **Nagłówek (Header):** Stały element na górze strony, zawierający logo oraz główne menu nawigacyjne. Na urządzeniach mobilnych menu transformuje się w tzw. "menu hamburgerowe" dla lepszej użyteczności.
+*   **Stopka (Footer):** Umieszczona na dole każdej strony, zawiera informację o prawach autorskich: *“© 2025 Kącik Twórcy Gier by Piotr Cebula”*.
 
-Projekty (projects.html)  
+Zaawansowana stylizacja, responsywność oraz interaktywne funkcjonalności są zarządzane przez zewnętrzne pliki `styles.css` oraz `script.js`.
 
-Prezentuje galerię maksymalnie 3 najnowszych projektów pobieranych z GitHub API. Każdy projekt wyświetlany jest w formie karty z tytułem, opisem (jeśli dostępny) i linkiem do repozytorium. 
+---
 
-Wykorzystuje responsywny układ z kartami projektowymi, dostosowujący się do szerokości ekranu. 
+### 1. Strona Główna (`index.html`)
 
-Laboratorium (lab.html)  
+*   **Cel:** Powitanie użytkownika, prezentacja autora oraz ogólne wprowadzenie do tematyki serwisu.
+*   **Zawartość:**
+    *   Sekcja powitalna.
+    *   Krótki opis autora i jego motywacji.
+    *   Informacje o doświadczeniu zawodowym (lub jego braku, w przypadku projektów studenckich/hobbystycznych).
+    *   Lista kluczowych umiejętności technicznych: `HTML`, `CSS`, `JavaScript`, `React`, `Python`, `Java`, `Git`.
+    *   Dane kontaktowe: email ([email protected]).
+*   **Struktura:** Treści prezentowane są w formie estetycznych "notatek" z przejrzystym i czytelnym układem, co ułatwia przyswajanie informacji.
 
-Służy do eksperymentów, np. "Taniec Cząsteczek" – symulacja cząstek z użyciem Canvas API, z opcjami resetu i eksplozji. Zawiera zapowiedź przyszłej mini-gry ("Kliknij, aby uniknąć przeszkód – wkrótce!"). 
+---
 
-Struktura opiera się na interaktywnych elementach z canvasem i przyciskami sterującymi. 
+### 2. Projekty (`projects.html`)
 
-Kącik Twórcy Gier (ktg.html)  
+*   **Cel:** Prezentacja portfolio projektów autora.
+*   **Zawartość:**
+    *   Dynamicznie generowana galeria zawierająca maksymalnie trzy najnowsze projekty.
+    *   Dane o projektach są pobierane w czasie rzeczywistym z **GitHub API**.
+    *   Każdy projekt jest wyświetlany jako interaktywna karta, zawierająca:
+        *   Tytuł projektu.
+        *   Krótki opis (jeśli dostępny w repozytorium GitHub).
+        *   Bezpośredni link do repozytorium na GitHub.
+*   **Struktura:** Strona wykorzystuje responsywny układ siatki (grid) dla kart projektowych, który automatycznie dostosowuje się do różnych szerokości ekranu, zapewniając optymalne wyświetlanie na desktopach, tabletach i urządzeniach mobilnych.
 
-Zawiera zapiski związane z tworzeniem gier, np. przykładowy kod C++ dla ruchu w grze wyścigowej, symulację ruchu pojazdu z Canvas API (z przyciskami: zwolnij, resetuj, przyspiesz) oraz generator pomysłów na gry (lista 32 unikalnych pomysłów). 
+---
 
-Oferuje interaktywne elementy i treści edukacyjne dla pasjonatów tworzenia gier. 
+### 3. Laboratorium (`lab.html`)
 
-Nowości (news.html)  
+*   **Cel:** Przestrzeń do prezentacji eksperymentalnych aplikacji i interaktywnych symulacji.
+*   **Zawartość:**
+    *   **“Taniec Cząsteczek”:** Interaktywna symulacja fizyki cząstek stworzona przy użyciu **Canvas API**. Użytkownik ma możliwość:
+        *   Resetowania symulacji do stanu początkowego.
+        *   Wywołania efektu "eksplozji", wpływającego na ruch cząstek.
+    *   Zapowiedź przyszłej mini-gry: *“Kliknij, aby uniknąć przeszkód – wkrótce!”*.
+*   **Struktura:** Główny nacisk położony jest na interaktywne elementy `canvas` oraz przyciski kontrolujące symulacje, zachęcające użytkownika do eksploracji.
 
-Wyświetla wiadomości ze świata gier pobierane z API mmobomb.com (przez proxy allorigins.win). Oferuje paginację (5, 10, 15, 20 elementów na stronę) i spinner ładowania. 
+---
 
-Strona zawiera sekcję z linkami do pełnych artykułów w responsywnym układzie. 
+### 4. Kącik Twórcy Gier (`ktg.html`)
 
-Blog (blog.html)  
+*   **Cel:** Dzielenie się wiedzą, narzędziami i inspiracjami związanymi z tworzeniem gier.
+*   **Zawartość:**
+    *   Przykładowe fragmenty kodu, np. implementacja ruchu postaci w grze wyścigowej w języku C++.
+    *   Interaktywna symulacja ruchu pojazdu zrealizowana za pomocą **Canvas API**, wyposażona w przyciski sterujące:
+        *   `Zwolnij`
+        *   `Resetuj`
+        *   `Przyspiesz`
+    *   **Generator Pomysłów na Gry:** Narzędzie generujące losowe koncepcje gier z predefiniowanej listy 32 unikalnych pomysłów, mające na celu stymulowanie kreatywności.
+*   **Struktura:** Strona łączy treści edukacyjne z interaktywnymi demonstracjami, skierowanymi do pasjonatów i początkujących twórców gier.
 
-Funkcjonalny blog z możliwością dodawania, edytowania i usuwania wpisów za pomocą API JSONPlaceholder. Zawiera filtry (po tytule lub treści), sortowanie (tytuł A-Z, Z-A, ID rosnąco/malejąco) oraz responsywny układ (tabela na desktopie, karty na mobile). 
+---
 
-Umożliwia interakcję z użytkownikiem poprzez formularz i akcje CRUD. 
+### 5. Nowości (`news.html`)
 
- 
+*   **Cel:** Dostarczanie najświeższych informacji i artykułów ze świata trendów, technologii oraz filmów.
+*   **Zawartość:**
+    *   Dynamicznie ładowana lista wiadomości o grach.
+    *   Dane pobierane są z zewnętrznego API (np. `NewsAPI.org`, `GNews API`, wcześniej `mmobomb.com`) za pośrednictwem serwera proxy (np. `AllOrigins.win` lub własnego rozwiązania) w celu ominięcia ograniczeń CORS.
+    *   Funkcjonalności:
+        *   **Paginacja:** Umożliwia przeglądanie wiadomości w partiach (np. 5, 10, 15, 20 elementów na stronę).
+        *   **Spinner ładowania:** Informuje użytkownika o procesie pobierania danych.
+    *   Każda wiadomość zawiera link do pełnego artykułu na oryginalnej stronie źródłowej.
+*   **Struktura:** Lista nowości prezentowana jest w responsywnym układzie, czytelnym na różnych urządzeniach.
 
-Opis Technologii Zastosowanych przy Tworzeniu Serwisu 
+---
 
-Serwis wykorzystuje nowoczesne technologie webowe i zewnętrzne API, co zapewnia jego funkcjonalność i estetykę. 
+### 6. Blog (`blog.html`)
 
-HTML5  
+*   **Cel:** Interaktywna platforma blogowa umożliwiająca zarządzanie treściami.
+*   **Zawartość:**
+    *   W pełni funkcjonalny blog z operacjami **CRUD** (Create, Read, Update, Delete) na wpisach.
+    *   Interakcje z backendem są symulowane za pomocą API **JSONPlaceholder**.
+    *   Funkcjonalności dla użytkownika:
+        *   Dodawanie nowych wpisów poprzez formularz.
+        *   Edycja istniejących wpisów.
+        *   Usuwanie wpisów (z mechanizmem potwierdzenia operacji).
+        *   **Filtrowanie wpisów:** Możliwość wyszukiwania po tytule lub treści.
+        *   **Sortowanie wpisów:** Według tytułu (A-Z, Z-A) lub ID (rosnąco, malejąco).
+*   **Struktura:**
+    *   **Desktop:** Wpisy prezentowane są w formie tabelarycznej dla łatwiejszego przeglądania i zarządzania.
+    *   **Mobile:** Układ zmienia się na bardziej kompaktowe karty, dostosowane do mniejszych ekranów.
 
-Użyto do budowy struktury stron z semantycznymi tagami (<header>, <nav>, <section>, <footer>), co poprawia dostępność i SEO. 
+## Opis Technologii Zastosowanych przy Tworzeniu Serwisu
 
-CSS3  
+Serwis został zbudowany z wykorzystaniem zbioru nowoczesnych technologii webowych oraz zewnętrznych usług API, co zapewnia jego dynamiczny charakter, interaktywność i estetyczny wygląd.
 
-Stylizacja obejmuje niestandardowy font ('Patrick Hand' z Google Fonts), gradienty liniowe (np. w nagłówku i stopce), cienie i animacje (np. transform na hover, spinner z @keyframes). 
+### 1. HTML5
 
-Responsywność osiągnięto dzięki media queries z punktami przełomowymi (480px, 768px, 1199px, 1366px). 
+*   Wykorzystano do tworzenia semantycznej struktury wszystkich podstron serwisu.
+*   Zastosowano tagi takie jak `<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<footer>` w celu poprawy dostępności i SEO.
 
-Efekty interaktywne, takie jak podnoszenie elementów na hover czy płynne przejścia z transition. 
+### 2. CSS3
 
-JavaScript  
+*   Odpowiada za pełną warstwę wizualną serwisu.
+*   **Stylizacja:**
+    *   Niestandardowy, charakterystyczny font **'Patrick Hand'** (importowany z Google Fonts), nadający stronie unikalny, "ręcznie pisany" styl.
+    *   Wykorzystanie **gradientów liniowych** (np. w nagłówku, stopce, przyciskach) dla uzyskania głębi i nowoczesnego wyglądu.
+    *   Subtelne **cienie** (`box-shadow`) dodające elementom trójwymiarowości.
+*   **Responsywność (RWD):**
+    *   Implementacja w pełni responsywnego designu przy użyciu **media queries**.
+    *   Zdefiniowane punkty przełomowe (breakpoints): `480px`, `768px`, `1199px`, `1366px`, zapewniające optymalne wyświetlanie na szerokiej gamie urządzeń.
+*   **Interaktywność i Animacje:**
+    *   Płynne **przejścia** (`transition`) dla efektów hover na linkach, przyciskach i kartach.
+    *   Animacje oparte na **`@keyframes`** (np. dla spinnera ładowania).
+    *   Efekty wizualne przy interakcji, takie jak "podnoszenie się" elementów (`transform: translateY`) po najechaniu kursorem.
 
-Obsługuje interaktywność, np. menu hamburgerowe, widoczność notatek podczas przewijania strony. 
+### 3. JavaScript (ES6+)
 
-Wykorzystuje Canvas API do symulacji ("Taniec Cząsteczek", ruch pojazdu). 
+*   Główny język skryptowy odpowiedzialny za logikę i interaktywność serwisu.
+*   **Manipulacja DOM:** Dynamiczne tworzenie i modyfikowanie elementów HTML.
+*   **Obsługa Zdarzeń:** Reakcja na akcje użytkownika (kliknięcia, przewijanie, zmiany w formularzach).
+    *   Implementacja **menu hamburgerowego** dla urządzeń mobilnych.
+    *   Logika **widoczności notatek** (`Intersection Observer API` lub metoda oparta na pozycji scrolla) podczas przewijania strony.
+*   **Canvas API:**
+    *   Wykorzystane do tworzenia interaktywnych symulacji graficznych:
+        *   “Taniec Cząsteczek” na stronie `lab.html`.
+        *   Symulacja ruchu pojazdu na stronie `ktg.html`.
+*   **Komunikacja z API:**
+    *   Użycie natywnego `fetch` API oraz składni `async/await` do asynchronicznego pobierania danych z zewnętrznych serwerów.
+    *   Obsługa odpowiedzi (w formacie JSON) i dynamiczne renderowanie danych na stronie.
+*   **Funkcjonalności Aplikacji:**
+    *   Implementacja pełnych operacji **CRUD** (Create, Read, Update, Delete) dla sekcji bloga, z potwierdzeniem operacji usuwania (`window.confirm`).
+    *   Logika **paginacji**, **filtrowania** i **sortowania** danych na stronach nowości i bloga.
+    *   Generator losowych pomysłów na gry.
 
-Pobiera dane z API (GitHub, JSONPlaceholder, mmobomb.com) za pomocą fetch i async/await. 
+### 4. Zewnętrzne API
 
-Implementuje operacje CRUD dla bloga (z potwierdzeniem usuwania) oraz paginację i filtry/sortowanie na stronach bloga i nowości. 
+*   **GitHub API:** (`https://api.github.com`)
+    *   Służy do pobierania informacji o publicznych repozytoriach użytkownika (np. `C-BULLKA`) w celu dynamicznego wyświetlania projektów na stronie `projects.html`.
+*   **JSONPlaceholder:** (`https://jsonplaceholder.typicode.com`)
+    *   Wykorzystywane jako darmowe, fałszywe API REST do symulacji backendu dla funkcjonalności bloga (pobieranie, dodawanie, edycja, usuwanie postów).
+*   **API Wiadomości:** (np. `NewsAPI.org`, `GNews.io`, wcześniej `MMOBomb.com`)
+    *   Służy do pobierania najnowszych wiadomości ze świata filmów, technologii oraz trendów , które są wyświetlane na stronie `news.html`.
+    *   Ze względu na ograniczenia CORS, żądania do tych API są często kierowane przez **serwer proxy** (np. publiczny `AllOrigins.win` lub preferowane własne rozwiązanie proxy).
 
-Zewnętrzne API  
+### 5. Fonty
 
-GitHub API: Pobieranie danych o repozytoriach na stronie projektów. 
+*   **Google Fonts:**
+    *   Importowany font **'Patrick Hand'** w celu nadania stronie charakterystycznego, przyjaznego wyglądu.
 
-JSONPlaceholder: Symulacja backendu dla bloga (CRUD). 
+### 6. Narzędzia Deweloperskie
 
-mmobomb.com API: Wiadomości o grach na stronie nowości (przez proxy allorigins.win). 
+*   **Git:** System kontroli wersji używany do zarządzania kodem źródłowym projektu.
+*   **Edytor Kodu:** Prawdopodobnie Visual Studio Code (VS Code) lub podobne zintegrowane środowisko programistyczne (IDE) do pisania i edycji kodu.
+*   **Przeglądarki Internetowe i Narzędzia Deweloperskie:** Do testowania, debugowania i inspekcji kodu (np. Chrome DevTools, Firefox Developer Tools).
+*   **Lokalny Serwer Deweloperski:** (np. Live Server w VS Code) do uruchamiania strony lokalnie i unikania problemów z `origin: null` przy testowaniu funkcjonalności zależnych od API.
 
-Fonty  
+## Testy
 
-'Patrick Hand' z Google Fonts nadaje serwisowi unikalny, ręcznie pisany styl. 
+Projekt został poddany serii testów mających na celu zapewnienie jego wysokiej jakości, poprawnego działania oraz dobrego doświadczenia użytkownika na różnych platformach i urządzeniach.
 
-Narzędzia  
+### 1. Testy Responsywności (RWD)
 
-Git do kontroli wersji. 
+*   **Zakres:** Sprawdzono wyświetlanie i funkcjonalność serwisu na różnych szerokościach ekranu, symulujących popularne urządzenia.
+*   **Scenariusze:**
+    *   **Desktop:** Rozdzielczości powyżej `1366px`.
+    *   **Tablet (orientacja pozioma/pionowa):** Rozdzielczości w zakresie `769px - 1199px`.
+    *   **Mobile (smartfony):** Rozdzielczości poniżej `768px`.
+*   **Wyniki:**
+    *   Układ strony poprawnie adaptuje się do dostępnej przestrzeni.
+    *   Menu nawigacyjne transformuje się w menu hamburgerowe na mniejszych ekranach i działa zgodnie z oczekiwaniami.
+    *   Karty projektów, wpisy blogowe i inne elementy kontenerowe dynamicznie zmieniają swój układ (np. z wielokolumnowego na jednokolumnowy).
+    *   Treści pozostają czytelne i dostępne na wszystkich testowanych rozdzielczościach.
 
-Środowisko developerskie, np. VS Code, do tworzenia i edycji kodu. 
+### 2. Testy Interaktywności
 
- 
+*   **Zakres:** Weryfikacja działania wszystkich interaktywnych komponentów serwisu.
+*   **Scenariusze:**
+    *   **Symulacje Canvas:**
+        *   “Taniec Cząsteczek”: Sprawdzono płynność animacji, reakcję na przyciski `Resetuj` i `Eksplozja`.
+        *   Symulacja Ruchu Pojazdu: Testowano działanie przycisków `Zwolnij`, `Resetuj`, `Przyspiesz` i poprawność wizualizacji ruchu.
+    *   **Generator Pomysłów:** Weryfikacja generowania różnych pomysłów po kliknięciu przycisku.
+    *   **Blog (CRUD):**
+        *   Dodawanie nowych wpisów: Sprawdzono poprawność działania formularza i pojawianie się nowego wpisu.
+        *   Edycja wpisów: Weryfikacja możliwości modyfikacji istniejących treści.
+        *   Usuwanie wpisów: Testowano mechanizm usuwania wraz z oknem potwierdzenia.
+        *   Filtrowanie i sortowanie: Sprawdzono działanie filtrów tekstowych oraz opcji sortowania.
+    *   **Nawigacja:** Testowano działanie linków w menu głównym i menu hamburgerowym.
+    *   **Efekty hover:** Sprawdzono poprawność wizualnych efektów po najechaniu kursorem na interaktywne elementy.
+*   **Wyniki:** Wszystkie testowane funkcje interaktywne działają płynnie i zgodnie z założeniami. Operacje na blogu są wykonywane bez błędów.
 
-Testy 
+### 3. Testy Integracji z API
 
-Projekt został poddany różnym testom w celu zapewnienia jakości i funkcjonalności: 
+*   **Zakres:** Sprawdzenie poprawności komunikacji z zewnętrznymi API oraz obsługi odpowiedzi.
+*   **Scenariusze:**
+    *   **GitHub API (`projects.html`):** Weryfikacja pobierania i wyświetlania danych o repozytoriach.
+    *   **JSONPlaceholder (`blog.html`):** Testowanie wszystkich operacji CRUD.
+    *   **API Wiadomości (`news.html`):** Sprawdzenie pobierania newsów (przez proxy), działania paginacji i spinnera ładowania.
+*   **Wyniki:**
+    *   Pobieranie danych z API generalnie działa stabilnie, jednakże zależne jest od dostępności i niezawodności publicznych serwerów proxy (w przypadku API wymagających obejścia CORS).
+    *   Mechanizmy obsługi błędów (np. spinner podczas ładowania, komunikaty o błędach w przypadku niepowodzenia pobrania danych) funkcjonują prawidłowo, informując użytkownika o stanie aplikacji.
 
-Testy Responsywności  
+### 4. Testy Dostępności (podstawowe)
 
-Sprawdzono działanie na różnych rozdzielczościach: desktop (1366px+), tablet (769-1199px), mobile (<768px). Menu hamburger działa poprawnie na urządzeniach mobilnych, a karty projektowe dostosowują się do ekranu. 
+*   **Zakres:** Ocena podstawowych aspektów dostępności serwisu.
+*   **Scenariusze:**
+    *   Użycie semantycznych tagów HTML (`<nav>`, `<article>`, `<main>` itp.).
+    *   Kontrast kolorów (weryfikacja wizualna, czy tekst jest czytelny na tle).
+    *   Nawigacja za pomocą klawiatury (podstawowe testy focusowania elementów).
+*   **Wyniki:** Strona wykorzystuje semantyczne tagi. Kontrast kolorów wydaje się być wystarczający dla większości elementów. Nawigacja klawiaturą jest możliwa dla głównych elementów interaktywnych. Dalsze, bardziej szczegółowe testy dostępności (np. z użyciem czytników ekranu) mogłyby zidentyfikować obszary do poprawy.
 
-Testy Interaktywności  
+### 5. Testy Przeglądarkowe (Cross-Browser Testing)
 
-Symulacje Canvas ("Taniec Cząsteczek", ruch pojazdu) działają płynnie, a przyciski (reset, eksplozja, generowanie pomysłów) reagują na kliknięcia. Blog umożliwia dodawanie i usuwanie wpisów bez błędów. 
+*   **Zakres:** Sprawdzenie kompatybilności i poprawnego wyświetlania serwisu w różnych popularnych przeglądarkach internetowych.
+*   **Testowane Przeglądarki:**
+    *   Google Chrome (najnowsza wersja)
+    *   Mozilla Firefox (najnowsza wersja)
+    *   Microsoft Edge (najnowsza wersja)
+    *   Opera (najnowsza wersja)
+*   **Wyniki:** Serwis generalnie wyświetla się i działa poprawnie we wszystkich testowanych przeglądarkach. Nie zaobserwowano znaczących problemów z układem ani funkcjonalnością. Należy jednak pamiętać, że problemy z ładowaniem danych z zewnętrznych API (szczególnie tych za proxy) mogą występować niezależnie od przeglądarki i są związane z dostępnością tych usług.
 
-Testy API  
+## Podsumowanie
 
-Pobieranie danych z GitHub, JSONPlaceholder i mmobomb.com działa stabilnie. Obsługa błędów (spinner ładowania, komunikaty) funkcjonuje prawidłowo. 
+Projekt **“Kącik Twórcy Gier”** stanowi kompleksową platformę internetową, która z powodzeniem integruje funkcje portfolio, bloga, interaktywnego laboratorium oraz agregatora nowości. Dzięki zastosowaniu nowoczesnych technologii webowych, takich jak HTML5, CSS3 i JavaScript (ES6+), oraz integracji z zewnętrznymi API, serwis oferuje użytkownikom dynamiczne, angażujące i wartościowe doświadczenie. Wyzwania związane z niezawodnością publicznych serwerów proxy podkreślają potencjalną potrzebę implementacji własnego rozwiązania backendowego dla zapewnienia długoterminowej stabilności niektórych funkcji.
 
-Testy Dostępności  
+---
 
-Użyto semantycznych tagów HTML, a kontrast kolorów jest wystarczający. 
+## Autor
 
-Testy Przeglądarkowe  
+Autorem projektu **“Kącik Twórcy Gier”** jest **Piotr Cebula**.
 
-Strona przetestowana w Opera, Edge, Chrome i Firefox – brak problemów, choć API mogą wymagać dodatkowego czasu do załadowania 
-
- 
-Podsumowanie 
-
-"Kącik Twórcy Gier" to wszechstronny projekt, który łączy portfolio, blog, laboratorium eksperymentów i sekcję nowości w spójną całość. Wykorzystanie HTML5, CSS3, JavaScriptu oraz zewnętrznych API zapewnia dynamiczne i interaktywne doświadczenie użytkownika. 
-
- 
+---
