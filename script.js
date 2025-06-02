@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const getProxiedUrl = (targetUrl, proxyName = "AllOrigins") => {
             const proxies = {
                 "AllOrigins": (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-                "CORSProxy.io": (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                "CORSProxy.io": (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`, 
                 "ThingProxy": (url) => `https://thingproxy.freeboard.io/fetch/${url}` 
             };
             
@@ -407,73 +407,61 @@ document.addEventListener("DOMContentLoaded", function () {
         const fetchLatestNews = async () => {
             if (loadingSpinner) loadingSpinner.classList.remove('hidden');
             
-            // --- TESTOWANIE ThingProxy z JSONPlaceholder ---
-            const dataSourceTest = {
-                name: "JSONPlaceholderTest",
-                url: "https://jsonplaceholder.typicode.com/todos/1", // Prosty, publiczny JSON
-                needsProxy: true, 
-                proxyToUse: "ThingProxy", 
-                transformData: (data) => {
-                    // JSONPlaceholder /todos/1 zwraca obiekt, nie tablicę.
-                    // Dla celów testowych opakujemy go w tablicę, aby pasował do logiki wyświetlania.
-                    // W prawdziwej aplikacji dostosowalibyśmy wyświetlanie.
-                    if (data && typeof data === 'object' && !Array.isArray(data)) {
-                        console.log("JSONPlaceholderTest data (single object):", data);
-                        // Przekształć, aby pasowało do oczekiwanej struktury news
-                        return [{
-                            id: data.id,
-                            title: data.title,
-                            short_description: `Completed: ${data.completed}`,
-                            thumbnail: '', // Brak thumbnaila
-                            article_url: '' // Brak article_url
-                        }];
-                    }
-                    console.error("JSONPlaceholderTest data is not a single object:", data);
-                    return []; 
-                }
-            };
+            const NEWS_API_ORG_KEY = "392abbf95911413fbe2aa1b09d180b4e"; // Twój klucz API NewsAPI.org
+            const GNEWS_API_KEY = "8aa308ea266f32b7d2660f53f9e98bbe"; // Twój klucz GNews
 
-            const dataSourceFreeToGame = {
-                name: "FreeToGame",
-                url: "https://www.freetogame.com/api/latestnews", 
+            const dataSourceNewsAPI = {
+                name: "NewsAPI.org",
+                url: `https://newsapi.org/v2/everything?q=(video%20games%20OR%20gaming%20OR%20gry%20wideo)&language=pl&sortBy=popularity&apiKey=${NEWS_API_ORG_KEY}`,
                 needsProxy: true, 
-                proxyToUse: "ThingProxy", 
+                proxyToUse: "AllOrigins", 
                 transformData: (data) => {
-                    if (!Array.isArray(data)) {
-                        console.error("FreeToGame data (via ThingProxy) is not an array:", data);
+                    if (!data || !Array.isArray(data.articles)) {
+                        console.error("NewsAPI.org data is not in expected format or missing articles array:", data);
                         return []; 
                     }
-                    return data.map(news => ({
-                        id: news.id,
-                        title: news.title,
-                        short_description: news.short_description,
-                        thumbnail: news.thumbnail, 
-                        article_url: news.article_url 
+                    return data.articles.map(article => ({
+                        id: article.url, 
+                        title: article.title,
+                        short_description: article.description,
+                        thumbnail: article.urlToImage, 
+                        article_url: article.url 
                     }));
                 }
             };
 
-            const dataSourceMMOBomb = {
-                name: "MMOBomb",
-                url: "https://www.mmobomb.com/api1/latestnews",
-                needsProxy: true,
-                proxyToUse: "AllOrigins", // Spróbujmy AllOrigins dla MMOBomb, skoro ThingProxy zawiodło z FreeToGame
+            const dataSourceGNews = { 
+                name: "GNews",
+                url: `https://gnews.io/api/v4/top-headlines?category=gaming&lang=pl&country=pl&apikey=${GNEWS_API_KEY}`,
+                needsProxy: true, 
+                proxyToUse: "AllOrigins", 
                 transformData: (data) => {
-                    if (!Array.isArray(data)) {
-                        console.error("MMOBomb data (via AllOrigins) is not an array:", data);
+                    if (!data || !Array.isArray(data.articles)) {
+                        console.error("GNews data is not in expected format or missing articles array:", data);
                         return []; 
                     }
-                    return data; 
+                    return data.articles.map(article => ({
+                        id: article.url, 
+                        title: article.title,
+                        short_description: article.description, 
+                        thumbnail: article.image, 
+                        article_url: article.url 
+                    }));
                 }
             };
             
-            // --- WYBIERZ ŹRÓDŁO DANYCH DO TESTU ---
-            let currentDataSource = dataSourceTest; // Testujemy ThingProxy
-            // let currentDataSource = dataSourceMMOBomb; // Jeśli dataSourceTest zadziała, spróbuj tego
-            // let currentDataSource = dataSourceFreeToGame; // Albo tego
+            // --- WYBIERZ ŹRÓDŁO DANYCH DO UŻYCIA ---
+            let currentDataSource = dataSourceNewsAPI; // Domyślnie NewsAPI.org przez AllOrigins
+            // let currentDataSource = dataSourceGNews; 
+
+            // Sprawdzenie kluczy API - usunięte, bo klucze są teraz wstawione
+            // if (currentDataSource.name === "NewsAPI.org" && NEWS_API_ORG_KEY === "TWOJ_NEWSAPI_ORG_KLUCZ") { ... }
+            // if (currentDataSource.name === "GNews" && GNEWS_API_KEY === "TWOJ_GNEWS_API_KEY") { ... }
 
 
             let fetchUrl = currentDataSource.url;
+            let fetchOptions = { headers: {} };
+
             if (currentDataSource.needsProxy) {
                 try {
                     fetchUrl = getProxiedUrl(currentDataSource.url, currentDataSource.proxyToUse);
@@ -485,10 +473,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
             
-            console.log(`Attempting to fetch news from: ${fetchUrl} (Source: ${currentDataSource.name} via ${currentDataSource.proxyToUse || 'direct'})`);
+            console.log(`Attempting to fetch news from: ${fetchUrl} (Source: ${currentDataSource.name} via ${currentDataSource.proxyToUse || 'direct'}) with options:`, fetchOptions);
 
             try {
-                const response = await fetch(fetchUrl);
+                const response = await fetch(fetchUrl, fetchOptions);
 
                 console.log(`${currentDataSource.name} response status:`, response.status);
                 console.log(`${currentDataSource.name} response OK:`, response.ok);
@@ -509,9 +497,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     if (response.status === 301 || response.status === 302) {
                         const locationHeader = response.headers.get('location');
-                        throw new Error (`${currentDataSource.name} (przez ${currentDataSource.proxyToUse}) zwróciło przekierowanie (${response.status}) na: ${locationHeader || 'nieznany URL'}. To może być problem z proxy lub docelowym API.`);
+                        throw new Error (`${currentDataSource.name} (przez ${currentDataSource.proxyToUse}) zwróciło przekierowanie (${response.status}) na: ${locationHeader || 'nieznany URL'}.`);
                     }
-                    throw new Error(`Błąd odpowiedzi od ${currentDataSource.name} (przez ${currentDataSource.proxyToUse}): Status ${response.status}. ${errorText.substring(0,150)}`);
+                    throw new Error(`Błąd odpowiedzi od ${currentDataSource.name} (przez ${currentDataSource.proxyToUse || 'direct'}): Status ${response.status}. ${errorText.substring(0,150)}`);
                 }
 
                 const rawData = await response.text(); 
@@ -530,24 +518,46 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 let processedData;
                 if (currentDataSource.needsProxy && currentDataSource.proxyToUse === "AllOrigins") {
+                    // AllOrigins zwraca obiekt { contents: "stringified_json_from_target", status: {...} }
+                    // lub { contents: "html_error_page_from_target", status: { http_code: 200_FROM_TARGET_BUT_IS_ERROR_PAGE } }
+                    // lub { contents: "json_error_from_target", status: { http_code: 401_FROM_TARGET } }
                     if (jsonData && jsonData.status && jsonData.status.http_code && jsonData.status.http_code !== 200) {
-                         let targetErrorContent = jsonData.contents || "Brak dodatkowych informacji o błędzie od API.";
-                         throw new Error(`AllOrigins: Błąd z docelowego API (${jsonData.status.url}): Status ${jsonData.status.http_code}. Szczegóły: ${JSON.stringify(targetErrorContent).substring(0,100)}`);
+                         console.warn(`AllOrigins: Target API (${jsonData.status.url}) returned HTTP status ${jsonData.status.http_code}.`);
+                         // Sprawdźmy, czy 'contents' to JSON z błędem od API
+                         if (typeof jsonData.contents === 'string') {
+                             try {
+                                 const targetErrorJson = JSON.parse(jsonData.contents);
+                                 // Jeśli NewsAPI.org zwróciło {status: "error", ...} to jest to błąd od API
+                                 if (targetErrorJson && targetErrorJson.status === "error") {
+                                     throw new Error(`AllOrigins: Błąd z docelowego API (${jsonData.status.url}): ${targetErrorJson.message || `Status ${jsonData.status.http_code}`}`);
+                                 }
+                             } catch (e) {
+                                 // contents nie jest JSONem, może być HTML
+                                 if (jsonData.contents.trim().startsWith('<')) {
+                                     console.warn(`AllOrigins: Target API returned HTML. Status: ${jsonData.status.http_code}.`);
+                                 }
+                             }
+                         }
+                         // Jeśli nie udało się sparsować błędu API z contents, rzuć ogólny błąd statusu
+                         throw new Error(`AllOrigins: Błąd z docelowego API (${jsonData.status.url}): Status ${jsonData.status.http_code}.`);
                     }
+                    // Jeśli status od target API jest 200 (lub nie ma statusu, co oznacza, że proxy nie mogło go odczytać, ale samo proxy odpowiedziało 200)
                     if (jsonData && typeof jsonData.contents === 'string') {
                         try {
                             processedData = JSON.parse(jsonData.contents); 
                         } catch (parseError) {
                             console.error('AllOrigins: Failed to parse jsonData.contents. It might be HTML or invalid JSON.', jsonData.contents.substring(0,500));
-                            throw new Error(`AllOrigins: Nie udało się przetworzyć treści z pola "contents". Otrzymano: ${jsonData.contents.substring(0,100)}...`);
+                            throw new Error(`AllOrigins: Nie udało się przetworzyć treści z pola "contents". Sprawdź, czy docelowe API zwróciło poprawny JSON.`);
                         }
                     } else {
-                        throw new Error('AllOrigins: Nieprawidłowa struktura danych, oczekiwano pola "contents" jako string.');
+                        console.error('AllOrigins: Invalid data structure from proxy, "contents" field is missing or not a string.', jsonData);
+                        throw new Error('AllOrigins: Nieprawidłowa struktura danych z proxy.');
                     }
                 } else if (currentDataSource.needsProxy && (currentDataSource.proxyToUse === "ThingProxy" || currentDataSource.proxyToUse === "CORSProxy.io")) {
-                    processedData = jsonData;
+                    // Te proxy powinny zwracać bezpośrednio JSON z docelowego API
+                    processedData = jsonData; 
                 } else if (!currentDataSource.needsProxy) {
-                     processedData = jsonData;
+                     processedData = jsonData; // Bezpośrednie zapytanie
                 } else {
                     throw new Error(`Nieobsługiwana konfiguracja proxy: ${currentDataSource.proxyToUse}`);
                 }
@@ -584,10 +594,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 newsItemDiv.classList.add('news-item', 'note'); 
                 
                 const title = news.title || 'Brak tytułu';
-                const description = news.short_description || 'Brak opisu.';
-                const thumbnail = news.thumbnail ? `<img src="${news.thumbnail}" alt="Miniatura dla ${title}" class="news-thumbnail" loading="lazy">` : '';
-                const articleLink = news.article_url ? `<a href="${news.article_url}" target="_blank" rel="noopener noreferrer">Czytaj więcej</a>` : '';
-
+                const description = news.short_description || 'Brak opisu.'; 
+                const thumbnail = news.thumbnail ? `<img src="${news.thumbnail}" alt="Miniatura dla ${title}" class="news-thumbnail" loading="lazy">` : ''; 
+                const articleLink = news.article_url ? `<a href="${news.article_url}" target="_blank" rel="noopener noreferrer">Czytaj więcej</a>` : ''; 
 
                 newsItemDiv.innerHTML = `
                     ${thumbnail}
