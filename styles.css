@@ -257,29 +257,63 @@ nav ul li:nth-child(6) a { background: #FFA07A; }
 }
 
 /* News Section */
+/* News Section (w styles.css) */
 .news-item {
     background: #fffef0;
-    padding: 18px;
+    padding: 18px; /* Możesz dostosować padding */
     margin-bottom: 18px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     transition: transform 0.3s ease;
+    display: flex; /* Dodane dla lepszego ułożenia obrazka i tekstu */
+    gap: 15px; /* Odstęp między obrazkiem a tekstem */
 }
 
 .news-item:hover {
     transform: translateY(-3px);
 }
 
+/* Styl dla miniatury wiadomości */
+.news-thumbnail {
+    width: 120px; /* Stała szerokość miniatury */
+    height: 90px;  /* Stała wysokość miniatury, zachowaj proporcje lub dostosuj */
+    object-fit: cover; /* Aby obrazek ładnie wypełniał kontener, przycinając nadmiar */
+    border-radius: 6px; /* Zaokrąglenie rogów obrazka */
+    flex-shrink: 0; /* Aby obrazek się nie kurczył, gdy tekst jest długi */
+}
+
+/* Kontener na treść tekstową wiadomości */
+.news-content {
+    flex-grow: 1; /* Aby tekst zajmował dostępną przestrzeń */
+}
+
+.news-item h3 {
+    margin-top: 0; /* Usunięcie domyślnego marginesu górnego dla H3 */
+    margin-bottom: 8px;
+    font-size: 1.4em; /* Możesz dostosować rozmiar czcionki tytułu */
+    color: #5a4634;
+}
+
+.news-item p {
+    margin-bottom: 12px;
+    font-size: 1em; /* Rozmiar czcionki opisu */
+    line-height: 1.6;
+}
+
 .news-item a {
     color: #8b5e34;
     text-decoration: none;
+    font-weight: bold; /* Pogrubienie linku "Czytaj więcej" */
     transition: color 0.3s ease;
 }
 
 .news-item a:hover {
     color: #e6b800;
+    text-decoration: underline; /* Podkreślenie przy najechaniu */
 }
+
+/* Style dla przycisków */
 
 /* Przyciski */
 button {
