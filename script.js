@@ -12,9 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let allPosts = [];
     let currentEditingPostId = null;
-    let allNews = [];
-    let currentPage = 1;
-    let itemsPerPage = 5;
 
     const notes = document.querySelectorAll(".note");
 
@@ -39,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         lastScrollY = window.scrollY;
         checkVisibility();
     });
-    checkVisibility();
+    checkVisibility(); // Initial check
 
     // Logika dla "Tańca Cząsteczek" (lab.html) z Canvas API
     if (document.getElementById('particle-canvas')) {
@@ -50,9 +47,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function resizeCanvas() {
             const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = Math.min(container.clientWidth * 0.5, 300);
-            initParticles();
+            if (container) {
+                canvas.width = container.clientWidth;
+                canvas.height = Math.min(container.clientWidth * 0.5, 300);
+            }
         }
 
         class Particle {
@@ -79,12 +77,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.changeColor();
                 }
 
-                if (
-                    (this.x <= this.radius && this.y <= this.radius) ||
-                    (this.x >= canvas.width - this.radius && this.y <= this.radius) ||
-                    (this.x <= this.radius && this.y >= canvas.height - this.radius) ||
-                    (this.x >= canvas.width - this.radius && this.y >= canvas.height - this.radius)
-                ) {
+                const hitLeft = this.x <= this.radius;
+                const hitRight = this.x >= canvas.width - this.radius;
+                const hitTop = this.y <= this.radius;
+                const hitBottom = this.y >= canvas.height - this.radius;
+
+                if ((hitLeft && hitTop) || (hitRight && hitTop) || (hitLeft && hitBottom) || (hitRight && hitBottom)) {
                     this.cornerHits++;
                     if (this.cornerHits < 3) {
                         this.radius = Math.max(1, this.radius - 1);
@@ -114,25 +112,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 const dx = this.x - centerX;
                 const dy = this.y - centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDistance = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
-                const force = (1 - distance / maxDistance) * 5;
+                const maxDistance = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2; 
+                
+                if (distance === 0) return; 
 
-                if (distance > 0) {
-                    this.vx += (dx / distance) * force;
-                    this.vy += (dy / distance) * force;
+                const forceMagnitude = (1 - Math.min(distance, maxDistance) / maxDistance) * 5; 
+
+                if (forceMagnitude > 0) {
+                    this.vx += (dx / distance) * forceMagnitude;
+                    this.vy += (dy / distance) * forceMagnitude;
                 }
             }
         }
 
         function initParticles() {
             particles = [];
-            for (let i = 0; i < 50; i++) {
+            const numParticles = Math.floor(canvas.width * canvas.height / 5000); 
+            for (let i = 0; i < Math.max(30, numParticles) ; i++) { 
                 particles.push(new Particle());
             }
         }
 
         function animateParticles() {
-            ctx.fillStyle = '#f5f0dc';
+            ctx.fillStyle = '#f5f0dc'; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             for (let i = particles.length - 1; i >= 0; i--) {
@@ -144,28 +146,39 @@ document.addEventListener("DOMContentLoaded", function () {
                     particles.splice(i, 1);
                 }
             }
-
             requestAnimationFrame(animateParticles);
         }
 
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        initParticles();
+        resizeCanvas(); 
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles(); 
+        });
+        initParticles(); 
         animateParticles();
 
-        document.getElementById('reset-particles').addEventListener('click', () => {
-            initParticles();
-        });
+        const resetParticlesButton = document.getElementById('reset-particles');
+        if (resetParticlesButton) {
+            resetParticlesButton.addEventListener('click', () => {
+                initParticles();
+            });
+        }
 
-        document.getElementById('shockwave-button')?.addEventListener('click', () => {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            particles.forEach(particle => particle.applyShockwave(centerX, centerY));
-        });
+
+        const shockwaveButton = document.getElementById('shockwave-button');
+        if (shockwaveButton) {
+            shockwaveButton.addEventListener('click', () => {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                particles.forEach(particle => particle.applyShockwave(centerX, centerY));
+            });
+        }
     }
 
-    // Logika dla strony blogowej (blog.html) - bez zmian
+    // Logika dla strony blogowej (blog.html)
     if (document.getElementById('blog-posts-container')) {
+        const blogPostsContainer = document.getElementById('blog-posts-container');
+        
         const fetchBlogPosts = async () => {
             try {
                 const response = await fetch('https://jsonplaceholder.typicode.com/posts');
@@ -174,13 +187,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 renderBlogPosts();
             } catch (error) {
                 console.error('Błąd pobierania wpisów:', error);
+                if (blogPostsContainer) {
+                    blogPostsContainer.innerHTML = `<p class="error-message">Nie udało się załadować wpisów: ${error.message}</p>`;
+                }
             }
         };
 
-        const displayBlogPosts = (posts) => {
-            const container = document.getElementById('blog-posts-container');
-            container.innerHTML = '';
+        const displayBlogPosts = (postsToDisplay) => {
+            if (!blogPostsContainer) return;
+            blogPostsContainer.innerHTML = '';
             const isDesktop = window.innerWidth > 768;
+
+            if (postsToDisplay.length === 0) {
+                blogPostsContainer.innerHTML = '<p>Brak wpisów do wyświetlenia.</p>';
+                return;
+            }
 
             if (isDesktop) {
                 const table = document.createElement('table');
@@ -194,8 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         </tr>
                     </thead>
                     <tbody>
-                        ${posts.map(post => `
-                            <tr>
+                        ${postsToDisplay.map(post => `
+                            <tr class="note">
                                 <td>${post.id}</td>
                                 <td>${post.title}</td>
                                 <td>${post.body}</td>
@@ -207,107 +228,131 @@ document.addEventListener("DOMContentLoaded", function () {
                         `).join('')}
                     </tbody>
                 `;
-                container.appendChild(table);
+                blogPostsContainer.appendChild(table);
             } else {
-                posts.forEach(post => {
+                postsToDisplay.forEach(post => {
                     const postElement = document.createElement('div');
-                    postElement.classList.add('note', 'blog-post');
+                    postElement.classList.add('note', 'blog-post'); 
                     postElement.innerHTML = `
                         <h3>${post.title}</h3>
                         <p>${post.body}</p>
-                        <button class="edit" onclick="editPost(${post.id})">Edytuj</button>
-                        <button class="delete" onclick="deletePost(${post.id})">Usuń</button>
+                        <div class="actions">
+                            <button class="edit" onclick="editPost(${post.id})">Edytuj</button>
+                            <button class="delete" onclick="deletePost(${post.id})">Usuń</button>
+                        </div>
                     `;
-                    container.appendChild(postElement);
+                    blogPostsContainer.appendChild(postElement);
                 });
             }
-            checkVisibility();
+            checkVisibility(); 
         };
 
-        const sortPosts = (posts, sortValue) => {
+        const sortPosts = (postsToSort, sortValue) => {
             const [key, order] = sortValue.split('-');
-            return [...posts].sort((a, b) => {
+            return [...postsToSort].sort((a, b) => {
                 if (key === 'title') {
                     return order === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
-                } else {
+                } else { 
                     return order === 'asc' ? a.id - b.id : b.id - a.id;
                 }
             });
         };
 
         const renderBlogPosts = () => {
-            const filterValue = document.getElementById('filter').value.toLowerCase();
-            const sortValue = document.getElementById('sort').value;
-            let posts = allPosts;
+            const filterInput = document.getElementById('filter');
+            const sortSelect = document.getElementById('sort');
+            if (!filterInput || !sortSelect) return;
+
+            const filterValue = filterInput.value.toLowerCase();
+            const sortValue = sortSelect.value;
+            let postsToRender = allPosts;
+
             if (filterValue) {
-                posts = posts.filter(post =>
+                postsToRender = postsToRender.filter(post =>
                     post.title.toLowerCase().includes(filterValue) ||
                     post.body.toLowerCase().includes(filterValue)
                 );
             }
-            posts = sortPosts(posts, sortValue);
-            displayBlogPosts(posts);
+            postsToRender = sortPosts(postsToRender, sortValue);
+            displayBlogPosts(postsToRender);
         };
 
-        document.getElementById('add-post-btn').addEventListener('click', () => {
-            document.querySelector('#add-post-form h3').textContent = 'Dodaj nowy wpis';
-            document.getElementById('title').value = '';
-            document.getElementById('body').value = '';
-            currentEditingPostId = null;
-            document.getElementById('add-post-form').style.display = 'block';
-        });
+        const addPostBtn = document.getElementById('add-post-btn');
+        const addPostFormDiv = document.getElementById('add-post-form');
+        const cancelAddBtn = document.getElementById('cancel-add');
+        const postForm = document.querySelector('#add-post-form form');
+        const formTitle = document.querySelector('#add-post-form h3');
+        const titleInput = document.getElementById('title');
+        const bodyInput = document.getElementById('body');
 
-        document.getElementById('cancel-add').addEventListener('click', () => {
-            document.getElementById('add-post-form').style.display = 'none';
-        });
 
-        document.querySelector('#add-post-form form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('title').value;
-            const body = document.getElementById('body').value;
-            try {
-                if (currentEditingPostId) {
-                    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${currentEditingPostId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: currentEditingPostId, title, body, userId: 1 })
-                    });
-                    if (!response.ok) throw new Error(`Błąd HTTP! Status: ${response.status}`);
-                    const updatedPost = await response.json();
-                    const index = allPosts.findIndex(p => p.id === currentEditingPostId);
-                    if (index !== -1) allPosts[index] = updatedPost;
-                } else {
-                    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, body, userId: 1 })
-                    });
-                    if (!response.ok) throw new Error(`Błąd HTTP! Status: ${response.status}`);
-                    const newPost = await response.json();
-                    allPosts.push(newPost);
-                }
-                renderBlogPosts();
-                document.getElementById('add-post-form').style.display = 'none';
-                document.getElementById('title').value = '';
-                document.getElementById('body').value = '';
+        if (addPostBtn && addPostFormDiv && formTitle && titleInput && bodyInput) {
+            addPostBtn.addEventListener('click', () => {
+                formTitle.textContent = 'Dodaj nowy wpis';
+                titleInput.value = '';
+                bodyInput.value = '';
                 currentEditingPostId = null;
-            } catch (error) {
-                console.error('Błąd zapisu wpisu:', error);
-            }
-        });
+                addPostFormDiv.style.display = 'block';
+            });
+        }
 
-        window.editPost = (postId) => {
+        if (cancelAddBtn && addPostFormDiv) {
+            cancelAddBtn.addEventListener('click', () => {
+                addPostFormDiv.style.display = 'none';
+            });
+        }
+
+        if (postForm && addPostFormDiv && titleInput && bodyInput) {
+            postForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = titleInput.value;
+                const body = bodyInput.value;
+                try {
+                    if (currentEditingPostId) {
+                        const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${currentEditingPostId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: currentEditingPostId, title, body, userId: 1 }) 
+                        });
+                        if (!response.ok) throw new Error(`Błąd HTTP! Status: ${response.status}`);
+                        const updatedPost = await response.json();
+                        const index = allPosts.findIndex(p => p.id === currentEditingPostId);
+                        if (index !== -1) allPosts[index] = updatedPost;
+                    } else {
+                        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title, body, userId: 1 }) 
+                        });
+                        if (!response.ok) throw new Error(`Błąd HTTP! Status: ${response.status}`);
+                        const newPost = await response.json();
+                        allPosts.unshift(newPost); 
+                    }
+                    renderBlogPosts();
+                    addPostFormDiv.style.display = 'none';
+                    titleInput.value = ''; 
+                    bodyInput.value = '';  
+                    currentEditingPostId = null;
+                } catch (error) {
+                    console.error('Błąd zapisu wpisu:', error);
+                    alert(`Nie udało się zapisać wpisu: ${error.message}`);
+                }
+            });
+        }
+
+        window.editPost = (postId) => { 
             const post = allPosts.find(p => p.id === postId);
-            if (post) {
-                document.getElementById('title').value = post.title;
-                document.getElementById('body').value = post.body;
+            if (post && titleInput && bodyInput && formTitle && addPostFormDiv) {
+                titleInput.value = post.title;
+                bodyInput.value = post.body;
                 currentEditingPostId = postId;
-                document.querySelector('#add-post-form h3').textContent = 'Edytuj wpis';
-                document.getElementById('add-post-form').style.display = 'block';
+                formTitle.textContent = 'Edytuj wpis';
+                addPostFormDiv.style.display = 'block';
+                addPostFormDiv.scrollIntoView({ behavior: 'smooth' });
             }
         };
 
-        window.deletePost = async (postId) => {
+        window.deletePost = async (postId) => { 
             if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
                 try {
                     const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`, {
@@ -318,124 +363,330 @@ document.addEventListener("DOMContentLoaded", function () {
                     renderBlogPosts();
                 } catch (error) {
                     console.error('Błąd usuwania wpisu:', error);
+                    alert(`Nie udało się usunąć wpisu: ${error.message}`);
                 }
             }
         };
+        
+        const sortSelectBlog = document.getElementById('sort');
+        const filterInputBlog = document.getElementById('filter');
 
-        document.getElementById('sort').addEventListener('change', renderBlogPosts);
-        document.getElementById('filter').addEventListener('input', renderBlogPosts);
+        if (sortSelectBlog) sortSelectBlog.addEventListener('change', renderBlogPosts);
+        if (filterInputBlog) filterInputBlog.addEventListener('input', renderBlogPosts);
 
         fetchBlogPosts();
-        window.addEventListener('resize', renderBlogPosts);
+        window.addEventListener('resize', renderBlogPosts); 
     }
 
-    // Logika dla strony nowości (news.html) - bez zmian
+    // Logika dla strony nowości (news.html)
     if (document.getElementById('news-container')) {
         const newsContainer = document.getElementById('news-container');
         const loadingSpinner = document.getElementById('loading-spinner');
-        console.log('newsContainer:', newsContainer);
-    
-        let allNews = [];
-        let currentPage = 1;
-        let itemsPerPage = 5;
+        
+        let allNewsItems = [];
+        let currentNewsPage = 1;
+        let newsItemsPerPage = 5;
+
+        const getProxiedUrl = (targetUrl, proxyName = "AllOrigins") => {
+            const proxies = {
+                "AllOrigins": (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                "CORSProxy.io": (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`, 
+                "ThingProxy": (url) => `https://thingproxy.freeboard.io/fetch/${url}` 
+            };
+            
+            const selectedProxyFunction = proxies[proxyName];
+            if (!selectedProxyFunction) {
+                console.error(`Proxy ${proxyName} not found.`);
+                throw new Error(`Proxy ${proxyName} not defined.`);
+            }
+
+            console.log(`Using proxy: ${proxyName} for URL: ${targetUrl}`);
+            return selectedProxyFunction(targetUrl);
+        };
     
         const fetchLatestNews = async () => {
-            try {
-                if (loadingSpinner) loadingSpinner.classList.remove('hidden');
-                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.mmobomb.com/api1/latestnews'));
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+            
+            const NEWS_API_ORG_KEY = "392abbf95911413fbe2aa1b09d180b4e"; // Twój klucz API NewsAPI.org
+            const GNEWS_API_KEY = "8aa308ea266f32b7d2660f53f9e98bbe"; // Twój klucz GNews
+
+            const dataSourceNewsAPI = {
+                name: "NewsAPI.org",
+                url: `https://newsapi.org/v2/everything?q=(video%20games%20OR%20gaming%20OR%20gry%20wideo)&language=pl&sortBy=popularity&apiKey=${NEWS_API_ORG_KEY}`,
+                needsProxy: true, 
+                proxyToUse: "AllOrigins", 
+                transformData: (data) => {
+                    if (!data || !Array.isArray(data.articles)) {
+                        console.error("NewsAPI.org data is not in expected format or missing articles array:", data);
+                        return []; 
+                    }
+                    return data.articles.map(article => ({
+                        id: article.url, 
+                        title: article.title,
+                        short_description: article.description,
+                        thumbnail: article.urlToImage, 
+                        article_url: article.url 
+                    }));
                 }
-                const data = await response.json();
-                console.log('Fetched data:', data);
-                allNews = JSON.parse(data.contents);
-                console.log('Parsed news data:', allNews);
+            };
+
+            const dataSourceGNews = { 
+                name: "GNews",
+                url: `https://gnews.io/api/v4/top-headlines?category=gaming&lang=pl&country=pl&apikey=${GNEWS_API_KEY}`,
+                needsProxy: true, 
+                proxyToUse: "AllOrigins", 
+                transformData: (data) => {
+                    if (!data || !Array.isArray(data.articles)) {
+                        console.error("GNews data is not in expected format or missing articles array:", data);
+                        return []; 
+                    }
+                    return data.articles.map(article => ({
+                        id: article.url, 
+                        title: article.title,
+                        short_description: article.description, 
+                        thumbnail: article.image, 
+                        article_url: article.url 
+                    }));
+                }
+            };
+            
+            // --- WYBIERZ ŹRÓDŁO DANYCH DO UŻYCIA ---
+            let currentDataSource = dataSourceNewsAPI; // Domyślnie NewsAPI.org przez AllOrigins
+            // let currentDataSource = dataSourceGNews; 
+
+            // Sprawdzenie kluczy API - usunięte, bo klucze są teraz wstawione
+            // if (currentDataSource.name === "NewsAPI.org" && NEWS_API_ORG_KEY === "TWOJ_NEWSAPI_ORG_KLUCZ") { ... }
+            // if (currentDataSource.name === "GNews" && GNEWS_API_KEY === "TWOJ_GNEWS_API_KEY") { ... }
+
+
+            let fetchUrl = currentDataSource.url;
+            let fetchOptions = { headers: {} };
+
+            if (currentDataSource.needsProxy) {
+                try {
+                    fetchUrl = getProxiedUrl(currentDataSource.url, currentDataSource.proxyToUse);
+                } catch (e) {
+                     console.error(e); 
+                     if (newsContainer) newsContainer.innerHTML = `<p class="error-message">Błąd konfiguracji proxy: ${e.message}</p>`;
+                     if (loadingSpinner) loadingSpinner.classList.add('hidden');
+                     return;
+                }
+            }
+            
+            console.log(`Attempting to fetch news from: ${fetchUrl} (Source: ${currentDataSource.name} via ${currentDataSource.proxyToUse || 'direct'}) with options:`, fetchOptions);
+
+            try {
+                const response = await fetch(fetchUrl, fetchOptions);
+
+                console.log(`${currentDataSource.name} response status:`, response.status);
+                console.log(`${currentDataSource.name} response OK:`, response.ok);
+                const responseHeaders = {};
+                response.headers.forEach((value, name) => { responseHeaders[name] = value; });
+                console.log(`${currentDataSource.name} response headers:`, responseHeaders);
+
+                if (!response.ok) {
+                    let errorText = "";
+                    try {
+                        errorText = await response.text();
+                        console.error(`${currentDataSource.name} response error text (if !response.ok):`, errorText.substring(0, 500));
+                    } catch (textError) {
+                        console.error(`Could not read error text from non-ok ${currentDataSource.name} response:`, textError);
+                    }
+                    if (response.status === 0) { 
+                         throw new Error(`Błąd sieciowy podczas próby połączenia z ${currentDataSource.name}.`);
+                    }
+                    if (response.status === 301 || response.status === 302) {
+                        const locationHeader = response.headers.get('location');
+                        throw new Error (`${currentDataSource.name} (przez ${currentDataSource.proxyToUse}) zwróciło przekierowanie (${response.status}) na: ${locationHeader || 'nieznany URL'}.`);
+                    }
+                    throw new Error(`Błąd odpowiedzi od ${currentDataSource.name} (przez ${currentDataSource.proxyToUse || 'direct'}): Status ${response.status}. ${errorText.substring(0,150)}`);
+                }
+
+                const rawData = await response.text(); 
+                console.log(`Raw data from ${currentDataSource.name} (via ${currentDataSource.proxyToUse}):`, rawData.substring(0, 500)); 
+
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(rawData);
+                } catch (parseError) {
+                    console.error(`Error parsing raw data from ${currentDataSource.name} as JSON:`, parseError);
+                    console.error('Raw data that failed to parse:', rawData.substring(0,1000));
+                    throw new Error(`Nie udało się przetworzyć danych JSON otrzymanych z ${currentDataSource.name}. Raw data: ${rawData.substring(0,200)}...`);
+                }
+                
+                console.log(`Parsed JSON data from ${currentDataSource.name} (via ${currentDataSource.proxyToUse}):`, jsonData);
+                
+                let processedData;
+                if (currentDataSource.needsProxy && currentDataSource.proxyToUse === "AllOrigins") {
+                    // AllOrigins zwraca obiekt { contents: "stringified_json_from_target", status: {...} }
+                    // lub { contents: "html_error_page_from_target", status: { http_code: 200_FROM_TARGET_BUT_IS_ERROR_PAGE } }
+                    // lub { contents: "json_error_from_target", status: { http_code: 401_FROM_TARGET } }
+                    if (jsonData && jsonData.status && jsonData.status.http_code && jsonData.status.http_code !== 200) {
+                         console.warn(`AllOrigins: Target API (${jsonData.status.url}) returned HTTP status ${jsonData.status.http_code}.`);
+                         // Sprawdźmy, czy 'contents' to JSON z błędem od API
+                         if (typeof jsonData.contents === 'string') {
+                             try {
+                                 const targetErrorJson = JSON.parse(jsonData.contents);
+                                 // Jeśli NewsAPI.org zwróciło {status: "error", ...} to jest to błąd od API
+                                 if (targetErrorJson && targetErrorJson.status === "error") {
+                                     throw new Error(`AllOrigins: Błąd z docelowego API (${jsonData.status.url}): ${targetErrorJson.message || `Status ${jsonData.status.http_code}`}`);
+                                 }
+                             } catch (e) {
+                                 // contents nie jest JSONem, może być HTML
+                                 if (jsonData.contents.trim().startsWith('<')) {
+                                     console.warn(`AllOrigins: Target API returned HTML. Status: ${jsonData.status.http_code}.`);
+                                 }
+                             }
+                         }
+                         // Jeśli nie udało się sparsować błędu API z contents, rzuć ogólny błąd statusu
+                         throw new Error(`AllOrigins: Błąd z docelowego API (${jsonData.status.url}): Status ${jsonData.status.http_code}.`);
+                    }
+                    // Jeśli status od target API jest 200 (lub nie ma statusu, co oznacza, że proxy nie mogło go odczytać, ale samo proxy odpowiedziało 200)
+                    if (jsonData && typeof jsonData.contents === 'string') {
+                        try {
+                            processedData = JSON.parse(jsonData.contents); 
+                        } catch (parseError) {
+                            console.error('AllOrigins: Failed to parse jsonData.contents. It might be HTML or invalid JSON.', jsonData.contents.substring(0,500));
+                            throw new Error(`AllOrigins: Nie udało się przetworzyć treści z pola "contents". Sprawdź, czy docelowe API zwróciło poprawny JSON.`);
+                        }
+                    } else {
+                        console.error('AllOrigins: Invalid data structure from proxy, "contents" field is missing or not a string.', jsonData);
+                        throw new Error('AllOrigins: Nieprawidłowa struktura danych z proxy.');
+                    }
+                } else if (currentDataSource.needsProxy && (currentDataSource.proxyToUse === "ThingProxy" || currentDataSource.proxyToUse === "CORSProxy.io")) {
+                    // Te proxy powinny zwracać bezpośrednio JSON z docelowego API
+                    processedData = jsonData; 
+                } else if (!currentDataSource.needsProxy) {
+                     processedData = jsonData; // Bezpośrednie zapytanie
+                } else {
+                    throw new Error(`Nieobsługiwana konfiguracja proxy: ${currentDataSource.proxyToUse}`);
+                }
+                
+                allNewsItems = currentDataSource.transformData(processedData);
+
+                if (!Array.isArray(allNewsItems)) {
+                    console.error('Dane nowości po przetworzeniu nie są tablicą:', allNewsItems);
+                    allNewsItems = []; 
+                    throw new Error('Otrzymane i przetworzone dane nowości nie są w oczekiwanym formacie (tablica).');
+                }
+                console.log('Final transformed news data (allNewsItems):', allNewsItems);
                 renderNewsPage();
-            } catch (error) {
-                console.error('Error fetching latest news:', error);
-                newsContainer.innerHTML = `<p>Nie udało się załadować informacji o nowościach: ${error.message}. Spróbuj ponownie później.</p>`;
+
+            } catch (error) { 
+                console.error(`General error in fetchLatestNews (Source: ${currentDataSource.name}, Proxy: ${currentDataSource.proxyToUse || 'none'}):`, error);
+                if (newsContainer) {
+                    newsContainer.innerHTML = `<p class="error-message">Nie udało się załadować informacji o nowościach z ${currentDataSource.name}: ${error.message}.</p>`;
+                }
             } finally {
                 if (loadingSpinner) loadingSpinner.classList.add('hidden');
             }
         };
     
-        const displayNews = (data) => {
+        const displayNews = (dataToDisplay) => {
+            if (!newsContainer) return; 
             newsContainer.innerHTML = '';
-            if (!data || data.length === 0) {
+            if (!dataToDisplay || dataToDisplay.length === 0) {
                 newsContainer.innerHTML = '<p>Brak nowości do wyświetlenia.</p>';
                 return;
             }
-            data.forEach(news => {
-                console.log('News item:', news);
-                const newsItem = `
-                    <div class="news-item note">
-                        <h3>${news.title}</h3>
-                        <p>${news.short_description}</p>
-                        <a href="${news.article_url}" target="_blank">Read more</a>
+            dataToDisplay.forEach(news => {
+                const newsItemDiv = document.createElement('div');
+                newsItemDiv.classList.add('news-item', 'note'); 
+                
+                const title = news.title || 'Brak tytułu';
+                const description = news.short_description || 'Brak opisu.'; 
+                const thumbnail = news.thumbnail ? `<img src="${news.thumbnail}" alt="Miniatura dla ${title}" class="news-thumbnail" loading="lazy">` : ''; 
+                const articleLink = news.article_url ? `<a href="${news.article_url}" target="_blank" rel="noopener noreferrer">Czytaj więcej</a>` : ''; 
+
+                newsItemDiv.innerHTML = `
+                    ${thumbnail}
+                    <div class="news-content">
+                        <h3>${title}</h3>
+                        <p>${description}</p>
+                        ${articleLink}
                     </div>
                 `;
-                newsContainer.innerHTML += newsItem;
+                newsContainer.appendChild(newsItemDiv);
             });
-            checkVisibility();
+            if (typeof checkVisibility === 'function') {
+                 checkVisibility();
+            }
         };
     
         const renderNewsPage = () => {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedNews = allNews.slice(startIndex, endIndex);
+            if (!Array.isArray(allNewsItems)) { 
+                console.error("Cannot render news: 'allNewsItems' is not an array.", allNewsItems);
+                if (newsContainer) newsContainer.innerHTML = '<p class="error-message">Wystąpił błąd podczas przetwarzania danych nowości.</p>';
+                return;
+            }
+            const startIndex = (currentNewsPage - 1) * newsItemsPerPage;
+            const endIndex = startIndex + newsItemsPerPage;
+            const paginatedNews = allNewsItems.slice(startIndex, endIndex);
             displayNews(paginatedNews);
             updatePaginationControls();
         };
     
         const updatePaginationControls = () => {
-            const totalPages = Math.ceil(allNews.length / itemsPerPage);
             const paginationContainer = document.getElementById('pagination');
+            if (!paginationContainer) return; 
+            if (!Array.isArray(allNewsItems) || allNewsItems.length === 0) { 
+                 paginationContainer.innerHTML = ''; 
+                 return;
+            }
+
+            const totalPages = Math.ceil(allNewsItems.length / newsItemsPerPage);
             paginationContainer.innerHTML = '';
     
             const itemsPerPageSelect = document.createElement('select');
             itemsPerPageSelect.id = 'items-per-page';
+            itemsPerPageSelect.setAttribute('aria-label', 'Wybierz liczbę wiadomości na stronę');
             [5, 10, 15, 20].forEach(num => {
                 const option = document.createElement('option');
                 option.value = num;
                 option.textContent = `${num} na stronę`;
-                if (num === itemsPerPage) option.selected = true;
+                if (num === newsItemsPerPage) option.selected = true;
                 itemsPerPageSelect.appendChild(option);
             });
             itemsPerPageSelect.addEventListener('change', (e) => {
-                itemsPerPage = parseInt(e.target.value);
-                currentPage = 1;
+                newsItemsPerPage = parseInt(e.target.value);
+                currentNewsPage = 1;
                 renderNewsPage();
             });
             paginationContainer.appendChild(itemsPerPageSelect);
     
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Poprzednia';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderNewsPage();
-                }
-            });
-            paginationContainer.appendChild(prevButton);
-    
-            const pageInfo = document.createElement('span');
-            pageInfo.textContent = ` Strona ${currentPage} z ${totalPages} `;
-            paginationContainer.appendChild(pageInfo);
-    
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Następna';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderNewsPage();
-                }
-            });
-            paginationContainer.appendChild(nextButton);
+            if (totalPages > 1) { 
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Poprzednia';
+                prevButton.disabled = currentNewsPage === 1;
+                prevButton.addEventListener('click', () => {
+                    if (currentNewsPage > 1) {
+                        currentNewsPage--;
+                        renderNewsPage();
+                        if (newsContainer) newsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+                paginationContainer.appendChild(prevButton);
+        
+                const pageInfo = document.createElement('span');
+                pageInfo.textContent = ` Strona ${currentNewsPage} z ${totalPages > 0 ? totalPages : 1} `;
+                pageInfo.setAttribute('aria-live', 'polite');
+                paginationContainer.appendChild(pageInfo);
+        
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Następna';
+                nextButton.disabled = currentNewsPage === totalPages || totalPages === 0;
+                nextButton.addEventListener('click', () => {
+                    if (currentNewsPage < totalPages) {
+                        currentNewsPage++;
+                        renderNewsPage();
+                        if (newsContainer) newsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+                paginationContainer.appendChild(nextButton);
+            }
         };
     
-        fetchLatestNews();
+        fetchLatestNews(); 
     }
 
     // Logika dla Kącika Twórcy Gier (ktg.html) z Canvas API
@@ -443,52 +694,58 @@ document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById('vehicle-sim');
         const ctx = canvas.getContext('2d');
         let x = 0;
-        const baseSpeed = 2; // Bazowa prędkość (stała)
-        let simulationSpeed = 1; // Mnożnik prędkości symulacji
+        const baseSpeed = 2; 
+        let currentSimulationSpeedMultiplier = 1; 
 
-        // Funkcja ustawiająca rozmiar canvasu
-        function resizeCanvas() {
+        function resizeVehicleCanvas() {
             const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = Math.min(container.clientWidth * 0.5, 200);
+            if (container) {
+                canvas.width = container.clientWidth;
+                canvas.height = Math.min(container.clientWidth * 0.5, 200); 
+            }
         }
 
         function drawVehicle() {
-            ctx.fillStyle = '#f9f4e8';
+            ctx.fillStyle = '#f9f4e8'; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#d4a017';
-            ctx.fillRect(x, canvas.height / 2 - 15, 50, 30);
-            x += baseSpeed * simulationSpeed;
-            if (x > canvas.width) x = -50;
+            ctx.fillStyle = '#d4a017'; 
+            ctx.fillRect(x, canvas.height / 2 - 15, 50, 30); 
+            x += baseSpeed * currentSimulationSpeedMultiplier;
+            if (x > canvas.width) x = -50; 
             requestAnimationFrame(drawVehicle);
         }
 
-        // Ustawienie początkowego rozmiaru i nasłuchiwanie zmian
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        resizeVehicleCanvas();
+        window.addEventListener('resize', resizeVehicleCanvas);
         drawVehicle();
 
-        // Reset pozycji i prędkości
-        document.getElementById('reset-sim').addEventListener('click', () => {
-            x = 0; // Reset pozycji do początkowej
-            simulationSpeed = 1; // Reset mnożnika prędkości do domyślnej wartości
-            console.log('Reset: Position =', x, 'Speed =', simulationSpeed); // Debug
-        });
+        const resetSimButton = document.getElementById('reset-sim');
+        if (resetSimButton) {
+            resetSimButton.addEventListener('click', () => {
+                x = 0;
+                currentSimulationSpeedMultiplier = 1;
+                console.log('Reset: Position =', x, 'Speed Multiplier =', currentSimulationSpeedMultiplier);
+            });
+        }
 
-        // Przyspieszenie symulacji
-        document.getElementById('speed-up')?.addEventListener('click', () => {
-            simulationSpeed = Math.min(simulationSpeed + 0.5, 3); // Max 3x
-            console.log('Simulation Speed Increased:', simulationSpeed); // Debug
-        });
-
-        // Zwolnienie symulacji
-        document.getElementById('slow-down')?.addEventListener('click', () => {
-            simulationSpeed = Math.max(simulationSpeed - 0.5, 0.1); // Min 0.1x
-            console.log('Simulation Speed Decreased:', simulationSpeed); // Debug
-        });
+        const speedUpButton = document.getElementById('speed-up');
+        if (speedUpButton) {
+            speedUpButton.addEventListener('click', () => {
+                currentSimulationSpeedMultiplier = Math.min(currentSimulationSpeedMultiplier + 0.5, 3); 
+                console.log('Simulation Speed Multiplier Increased:', currentSimulationSpeedMultiplier);
+            });
+        }
+        
+        const slowDownButton = document.getElementById('slow-down');
+        if (slowDownButton) {
+            slowDownButton.addEventListener('click', () => {
+                currentSimulationSpeedMultiplier = Math.max(currentSimulationSpeedMultiplier - 0.5, 0.1); 
+                console.log('Simulation Speed Multiplier Decreased:', currentSimulationSpeedMultiplier);
+            });
+        }
     }
 
-    // Generator pomysłów na gry - bez zmian
+    // Generator pomysłów na gry
     if (document.getElementById('generate-idea')) {
         const gameIdeas = [
             "Gra wyścigowa w kosmosie z grawitacją planet",
@@ -528,36 +785,58 @@ document.addEventListener("DOMContentLoaded", function () {
             "Gra multiplayer o budowie i obronie zamków w realiach średniowiecza"
         ];
 
+        const gameIdeaElement = document.getElementById('game-idea');
+        const generateIdeaButton = document.getElementById('generate-idea');
+
         const generateIdea = () => {
-            const idea = gameIdeas[Math.floor(Math.random() * gameIdeas.length)];
-            document.getElementById('game-idea').textContent = idea;
+            if (gameIdeaElement) {
+                const idea = gameIdeas[Math.floor(Math.random() * gameIdeas.length)];
+                gameIdeaElement.textContent = idea;
+            }
         };
 
-        document.getElementById('generate-idea').addEventListener('click', generateIdea);
-        generateIdea();
+        if (generateIdeaButton) {
+            generateIdeaButton.addEventListener('click', generateIdea);
+        }
+        generateIdea(); 
     }
 
-    // Logika dla strony projektów (projects.html) - bez zmian
+    // Logika dla strony projektów (projects.html)
     const fetchProjects = async () => {
+        const gallery = document.getElementById('project-gallery');
+        if (!gallery) return;
+
         try {
-            const response = await fetch('https://api.github.com/users/C-BULLKA/repos');
+            const response = await fetch('https://api.github.com/users/C-BULLKA/repos?sort=updated&per_page=3'); 
+            if (!response.ok) {
+                throw new Error(`Błąd HTTP! Status: ${response.status}`);
+            }
             const repos = await response.json();
-            const gallery = document.getElementById('project-gallery');
-            gallery.innerHTML = '';
-            repos.slice(0, 3).forEach(repo => {
+            gallery.innerHTML = ''; 
+
+            if (repos.length === 0) {
+                gallery.innerHTML = '<p>Brak publicznych projektów na GitHub lub nie udało się ich załadować.</p>';
+                return;
+            }
+
+            repos.forEach(repo => {
                 const card = document.createElement('div');
-                card.classList.add('project-card');
+                card.classList.add('project-card', 'note'); 
                 card.innerHTML = `
                     <h3>Projekt: ${repo.name}</h3>
-                    <p>${repo.description || 'Brak opisu'}</p>
-                    <a href="${repo.html_url}" target="_blank">Zobacz na GitHub</a>
+                    <p>${repo.description || 'Brak opisu.'}</p>
+                    <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">Zobacz na GitHub</a>
                 `;
                 gallery.appendChild(card);
             });
+            checkVisibility(); 
         } catch (error) {
             console.error('Błąd pobierania projektów:', error);
+            gallery.innerHTML = `<p class="error-message">Nie udało się załadować projektów: ${error.message}</p>`;
         }
     };
 
-    if (document.getElementById('project-gallery')) fetchProjects();
+    if (document.getElementById('project-gallery')) {
+        fetchProjects();
+    }
 });
